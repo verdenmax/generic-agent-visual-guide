@@ -282,7 +282,7 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
     turn += <span class="nb">1</span>
     response = <span class="kw">yield from</span> client.<span class="fn">chat</span>(messages=messages, tools=tools_schema)
 
-    <span class="cm"># 没调工具就记为 no_tool / no tool call -&gt; no_tool</span>
+    <span class="cm"># 没调工具就记为 no_tool</span>
     tool_calls = [{<span class="st">'tool_name'</span>: tc.function.name, <span class="st">'args'</span>: json.<span class="fn">loads</span>(tc.function.arguments)}
                   <span class="kw">for</span> tc <span class="kw">in</span> response.tool_calls]
 
@@ -298,7 +298,7 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
     turn += <span class="nb">1</span>
     response = <span class="kw">yield from</span> client.<span class="fn">chat</span>(messages=messages, tools=tools_schema)
 
-    <span class="cm"># 没调工具就记为 no_tool / no tool call -&gt; no_tool</span>
+    <span class="cm"># no tool call -&gt; no_tool</span>
     tool_calls = [{<span class="st">'tool_name'</span>: tc.function.name, <span class="st">'args'</span>: json.<span class="fn">loads</span>(tc.function.arguments)}
                   <span class="kw">for</span> tc <span class="kw">in</span> response.tool_calls]
 
@@ -308,7 +308,7 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
         <span class="kw">if</span> <span class="kw">not</span> outcome.next_prompt: ...   <span class="cm"># CURRENT_TASK_DONE</span>
         tool_results.<span class="fn">append</span>(...)
 
-    <span class="cm"># 只把新消息带入下一轮，历史由 Session 保存</span>
+    <span class="cm"># only the new message goes to the next turn; history is kept by Session</span>
     messages = [{<span class="st">'role'</span>: <span class="st">'user'</span>, <span class="st">'content'</span>: next_prompt, <span class="st">'tool_results'</span>: tool_results}]
 </pre></div><div class="card detail"><div class="tag">🔬 In the Source</div><p>Every step maps to a concrete spot in the source:</p><ul><li>The loop itself: <span class="inline">agent_loop.py: agent_runner_loop</span>; the initial messages are system_prompt + user_input.</li><li>Tool dispatch: <span class="inline">agent_loop.py: BaseHandler.dispatch</span> looks up <span class="inline">do_&lt;tool&gt;</span> and runs it (implementations in <span class="inline">ga.py: GenericAgentHandler</span>).</li><li>The per-step contract: <span class="inline">agent_loop.py: StepOutcome</span> — its three fields data / next_prompt / should_exit decide where the loop goes.</li><li>Model & tool calls: <span class="inline">llmcore.py: chat</span> returns a response carrying <span class="inline">response.tool_calls</span>, which the loop parses and runs one by one.</li></ul></div><div class="card analogy"><div class="tag">🧩 Analogy</div><p>Think of a <strong>head chef (the LLM) and an assistant (the loop)</strong> cooking together. The assistant recaps the situation (messages); the chef says "go dice the onions" (a tool_call); the assistant does it (do_&lt;tool&gt;) and brings back the diced onions plus "done, what next?" (a StepOutcome's data + next_prompt); the chef issues the next instruction. When the chef finally says "that's it, plate it up" (should_exit), the dish is complete.</p></div><div class="card key"><div class="tag">✅ Key Takeaways</div><ul><li>A task = one while loop; each pass is a turn, up to max_turns (default 40).</li><li>Per-turn rhythm: chat → tool_calls → dispatch → do_&lt;tool&gt; → StepOutcome → back into messages.</li><li>StepOutcome's three fields are the loop's steering wheel: data, next_prompt, should_exit.</li><li>Three ways to end: should_exit, no next_prompt (task done), or hitting max_turns.</li></ul></div><div class="card spark"><div class="tag">💡 Design Insight</div><p>Notice the line <span class="mono">messages = [{...new message...}]</span>: each turn passes only <strong>one new message</strong> downward, instead of re-sending an ever-growing transcript. The full history is kept by the Session, and the loop carries just "the delta of this step". This small choice is exactly what keeps the context under ~30K — token-thrifty, low-noise and more stable, all from here.</p></div></div>
   <div class="footnav"><a class="prev" href="02-project-map.html"><div class="dir"><span class="zh">← 上一课</span><span class="en">← Prev</span></div><div class="ttl"><span class="zh">项目全景地图</span><span class="en">Project Map</span></div></a><a class="next" href="04-install.html"><div class="dir"><span class="zh">下一课 →</span><span class="en">Next →</span></div><div class="ttl"><span class="zh">安装与启动</span><span class="en">Install & Launch</span></div></a></div>

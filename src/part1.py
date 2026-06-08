@@ -231,9 +231,12 @@ def lesson_02(t):
         + '<span class="name">frontends/ · ga_cli/ · simphtml.py</span></div>'
         + '<div class="ld">' + t(
             '外壳层。frontends/ 提供桌面端、TUI、各类 IM 机器人；ga_cli/ 是命令行入口；'
-            'simphtml.py 负责把内容渲染成 HTML。',
+            'simphtml.py 是网页 HTML 简化 / token 优化工具——把网页 DOM 压缩成精简内容，'
+            '供 web_scan/web_execute_js 工具低成本阅读（被 ga.py 调用）。',
             'The shell layer. frontends/ provides the desktop app, TUI and IM bots; ga_cli/ is the '
-            'command-line entry; simphtml.py renders content into HTML.') + '</div></div>'
+            'command-line entry; simphtml.py is a web HTML simplifier / token optimizer that shrinks '
+            'a page\'s DOM into compact content so the web_scan/web_execute_js tools can read pages '
+            'cheaply (used by ga.py).') + '</div></div>'
         + '</div>'
 
         + '<h2>' + t('核心文件速查表', 'Core file cheat-sheet') + '</h2>'
@@ -252,8 +255,8 @@ def lesson_02(t):
         + t('GenericAgentHandler：9 个原子工具的具体实现（do_code_run、do_file_read…）。',
             'GenericAgentHandler: the concrete 9 atomic tools (do_code_run, do_file_read …).') + '</td></tr>'
         + '<tr><td class="mono">simphtml.py</td><td>'
-        + t('渲染：把 Markdown / 内容转成 HTML 供前端展示。',
-            'Rendering: turns Markdown/content into HTML for the frontends.') + '</td></tr>'
+        + t('网页 HTML 简化 / token 优化：把网页 DOM 压缩成精简内容，供 web_scan/web_execute_js 工具低成本阅读（被 ga.py 调用）。',
+            'Web HTML simplifier / token optimizer: shrinks a page\'s DOM into compact content so the web_scan/web_execute_js tools can read pages cheaply (used by ga.py).') + '</td></tr>'
         + '<tr><td class="mono">memory/</td><td>'
         + t('分层记忆 L0–L4 与可复用 SOP（如 plan_sop.md、verify_sop.md）。',
             'Layered memory L0–L4 and reusable SOPs (e.g. plan_sop.md, verify_sop.md).') + '</td></tr>'
@@ -424,7 +427,7 @@ def lesson_03(t):
         + '    turn += <span class="nb">1</span>\n'
         + '    response = <span class="kw">yield from</span> client.<span class="fn">chat</span>('
         + 'messages=messages, tools=tools_schema)\n\n'
-        + '    <span class="cm"># 没调工具就记为 no_tool / no tool call -&gt; no_tool</span>\n'
+        + '    <span class="cm"># ' + t('没调工具就记为 no_tool', 'no tool call -&gt; no_tool') + '</span>\n'
         + '    tool_calls = [{<span class="st">\'tool_name\'</span>: tc.function.name, '
         + '<span class="st">\'args\'</span>: json.<span class="fn">loads</span>(tc.function.arguments)}\n'
         + '                  <span class="kw">for</span> tc <span class="kw">in</span> response.tool_calls]\n\n'
@@ -436,7 +439,7 @@ def lesson_03(t):
         + '        <span class="kw">if</span> <span class="kw">not</span> outcome.next_prompt: ...   '
         + '<span class="cm"># CURRENT_TASK_DONE</span>\n'
         + '        tool_results.<span class="fn">append</span>(...)\n\n'
-        + '    <span class="cm"># 只把新消息带入下一轮，历史由 Session 保存</span>\n'
+        + '    <span class="cm"># ' + t('只把新消息带入下一轮，历史由 Session 保存', 'only the new message goes to the next turn; history is kept by Session') + '</span>\n'
         + '    messages = [{<span class="st">\'role\'</span>: <span class="st">\'user\'</span>, '
         + '<span class="st">\'content\'</span>: next_prompt, '
         + '<span class="st">\'tool_results\'</span>: tool_results}]\n'
