@@ -1,11 +1,14 @@
-"""Verify every internal relative link in the built site resolves to a file.
+"""Verify every internal link in the built site resolves — files AND anchors.
 
-Checks index.html and lessons/*.html: each relative href (after stripping any
-``#anchor``) must point to an existing file, resolved relative to the page's
-own directory. External (http/https), anchors (#), mailto: and data: URIs are
-skipped.
+Checks index.html and lessons/*.html in two passes. Pass 1 collects every
+``id="..."`` target per page; pass 2 validates each relative href, including
+intra-page (``#anchor``) and cross-file (``file.html#id``) fragments against
+those collected ids. External (http/https), mailto: and data: URIs are
+skipped. Anchors ARE now validated (previously fragments were stripped and
+ignored).
 
-Exit code 1 if any broken link is found. No third-party dependencies.
+Exit code 1 if any broken link is found, or if the site has not been built.
+No third-party dependencies.
 
 Usage:
     cd src && python check_links.py     # or: python src/check_links.py
@@ -18,42 +21,82 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, ".."))
 
 HREF_RE = re.compile(r'href="([^"]+)"')
-SKIP_PREFIXES = ("http://", "https://", "#", "mailto:", "data:")
+# Assumes double-quoted attributes, consistent with HREF_RE and the shell's
+# double-quoted output.
+ID_RE = re.compile(r'id="([^"]+)"')
+SKIP_PREFIXES = ("http://", "https://", "mailto:", "data:")
 
 
-def page_files():
-    yield os.path.join(ROOT, "index.html")
-    lessons = os.path.join(ROOT, "lessons")
-    for name in sorted(os.listdir(lessons)):
-        if name.endswith(".html"):
-            yield os.path.join(lessons, name)
+def page_files(root=ROOT):
+    yield os.path.join(root, "index.html")
+    lessons = os.path.join(root, "lessons")
+    if os.path.isdir(lessons):
+        for name in sorted(os.listdir(lessons)):
+            if name.endswith(".html"):
+                yield os.path.join(lessons, name)
 
 
-def check():
+def _key(path):
+    return os.path.normpath(os.path.abspath(path))
+
+
+def check(root=ROOT):
+    pages = list(page_files(root))
+
+    # Pass 1: collect id targets per page, keyed by normalized absolute path.
+    ids_by_path = {}
+    for path in pages:
+        with open(path, encoding="utf-8") as f:
+            ids_by_path[_key(path)] = set(ID_RE.findall(f.read()))
+
+    # Pass 2: validate each href (file existence + fragment targets).
     broken = []
     checked = 0
-    for path in page_files():
+    for path in pages:
+        page_key = _key(path)
         base = os.path.dirname(path)
+        rel = os.path.relpath(path, root)
         with open(path, encoding="utf-8") as f:
             html = f.read()
         for href in HREF_RE.findall(html):
             if href.startswith(SKIP_PREFIXES):
                 continue
-            target = href.split("#", 1)[0]
-            if not target:
-                continue
             checked += 1
-            resolved = os.path.normpath(os.path.join(base, target))
-            if not os.path.exists(resolved):
-                broken.append((os.path.relpath(path, ROOT), href))
+
+            if href.startswith("#"):
+                fragment = href[1:]
+                if fragment and fragment not in ids_by_path[page_key]:
+                    broken.append((rel, href, f"missing anchor #{fragment}"))
+                continue
+
+            target_file, _, fragment = href.partition("#")
+            if not target_file:
+                target_key = page_key
+            else:
+                resolved = os.path.normpath(os.path.join(base, target_file))
+                if not os.path.exists(resolved):
+                    broken.append((rel, href, "missing file"))
+                    continue
+                target_key = _key(resolved)
+                if target_key not in ids_by_path:
+                    with open(resolved, encoding="utf-8") as f:
+                        ids_by_path[target_key] = set(ID_RE.findall(f.read()))
+
+            if fragment and fragment not in ids_by_path[target_key]:
+                broken.append((rel, href, f"missing anchor #{fragment}"))
     return checked, broken
 
 
 if __name__ == "__main__":
+    if not os.path.exists(os.path.join(ROOT, "index.html")) or not os.path.isdir(
+        os.path.join(ROOT, "lessons")
+    ):
+        print("site not built — run build.py first")
+        sys.exit(1)
     checked, broken = check()
     if broken:
         print(f"✗ {len(broken)} broken link(s):")
-        for page, href in broken:
-            print(f"  {page} -> {href}")
+        for page, href, reason in broken:
+            print(f"  {page} -> {href} ({reason})")
         sys.exit(1)
     print(f"✓ all {checked} internal links resolve")

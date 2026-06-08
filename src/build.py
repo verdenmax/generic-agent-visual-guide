@@ -7,6 +7,7 @@ shared HTML shell from :mod:`shell`.
 Usage:
     cd src && python build.py
 """
+import glob
 import os
 import sys
 
@@ -34,6 +35,8 @@ def build():
         )
 
     os.makedirs(LESSONS_DIR, exist_ok=True)
+    for stale in glob.glob(os.path.join(LESSONS_DIR, "*.html")):
+        os.remove(stale)
     written = []
 
     for p in shell.PAGES:

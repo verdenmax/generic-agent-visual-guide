@@ -8,6 +8,7 @@ once in ``setUpClass`` and assert against the generated artifacts.
 
 import os
 import sys
+import tempfile
 import unittest
 
 SRC = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -67,6 +68,29 @@ class TestBuildPipeline(unittest.TestCase):
         self.assertEqual(broken, [], f"broken links: {broken}")
         self.assertGreater(checked, 0)
 
+    def test_body_bilingual_all_pages(self):
+        # Targets lesson BODY content (not just chrome): every built lesson
+        # must render both the Chinese and English placeholder, proving both
+        # i18n passes ran on the body. (Updated when real content lands.)
+        for p in shell.PAGES:
+            with open(os.path.join(ROOT, "lessons", p.fname), encoding="utf-8") as f:
+                html = f.read()
+            self.assertIn(ZH_PLACEHOLDER, html, p.fname)
+            self.assertIn(EN_PLACEHOLDER, html, p.fname)
+
+    def test_stale_file_cleanup(self):
+        junk = os.path.join(ROOT, "lessons", "99-junk.html")
+        with open(junk, "w", encoding="utf-8") as f:
+            f.write("<!-- junk -->")
+        self.assertTrue(os.path.exists(junk))
+        build.build()
+        self.assertFalse(os.path.exists(junk), "stale 99-junk.html not removed")
+        for p in shell.PAGES:
+            self.assertTrue(
+                os.path.exists(os.path.join(ROOT, "lessons", p.fname)),
+                f"missing lessons/{p.fname} after rebuild",
+            )
+
     def test_stub_render_through_pipeline(self):
         with open(os.path.join(ROOT, "lessons", "01-what-is-ga.html"), encoding="utf-8") as f:
             html = f.read()
@@ -74,6 +98,64 @@ class TestBuildPipeline(unittest.TestCase):
         en = html.split('<div class="en">', 1)[1]
         self.assertIn(ZH_PLACEHOLDER, zh)
         self.assertIn(EN_PLACEHOLDER, en)
+
+
+class TestCheckLinksAnchors(unittest.TestCase):
+    """Unit-style tests for anchor-aware check_links.check(root=...)."""
+
+    def _build_site(self, root, index_html, lesson_html):
+        os.makedirs(os.path.join(root, "lessons"), exist_ok=True)
+        with open(os.path.join(root, "index.html"), "w", encoding="utf-8") as f:
+            f.write(index_html)
+        with open(os.path.join(root, "lessons", "a.html"), "w", encoding="utf-8") as f:
+            f.write(lesson_html)
+
+    def test_anchors_resolve(self):
+        with tempfile.TemporaryDirectory() as root:
+            self._build_site(
+                root,
+                index_html=(
+                    '<a id="top"></a>'
+                    '<a href="#top">self</a>'
+                    '<a href="lessons/a.html#sec">cross</a>'
+                ),
+                lesson_html='<h2 id="sec">Section</h2>',
+            )
+            checked, broken = check_links.check(root=root)
+            self.assertEqual(broken, [], f"unexpected broken: {broken}")
+            self.assertGreater(checked, 0)
+
+    def test_anchors_broken(self):
+        with tempfile.TemporaryDirectory() as root:
+            self._build_site(
+                root,
+                index_html=(
+                    '<a id="top"></a>'
+                    '<a href="#missing">bad self</a>'
+                    '<a href="lessons/a.html#missing">bad cross</a>'
+                ),
+                lesson_html='<h2 id="sec">Section</h2>',
+            )
+            checked, broken = check_links.check(root=root)
+            self.assertGreater(len(broken), 0)
+            hrefs = {href for _, href, _ in broken}
+            self.assertIn("#missing", hrefs)
+            self.assertIn("lessons/a.html#missing", hrefs)
+            for _, _, reason in broken:
+                self.assertIn("missing anchor", reason)
+
+    def test_missing_file_reason(self):
+        with tempfile.TemporaryDirectory() as root:
+            self._build_site(
+                root,
+                index_html='<a href="lessons/nope.html">gone</a>',
+                lesson_html="<p>ok</p>",
+            )
+            checked, broken = check_links.check(root=root)
+            self.assertTrue(
+                any(reason == "missing file" for _, _, reason in broken),
+                f"expected a missing-file reason, got {broken}",
+            )
 
 
 if __name__ == "__main__":
