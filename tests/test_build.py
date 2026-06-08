@@ -18,6 +18,7 @@ import shell  # noqa: E402
 import registry  # noqa: E402
 import build  # noqa: E402
 import check_links  # noqa: E402
+import i18n  # noqa: E402
 
 ROOT = build.ROOT
 ZH_PLACEHOLDER = "本课内容正在编写中。"
@@ -69,14 +70,19 @@ class TestBuildPipeline(unittest.TestCase):
         self.assertGreater(checked, 0)
 
     def test_body_bilingual_all_pages(self):
-        # Targets lesson BODY content (not just chrome): every built lesson
-        # must render both the Chinese and English placeholder, proving both
-        # i18n passes ran on the body. (Updated when real content lands.)
-        for p in shell.PAGES:
-            with open(os.path.join(ROOT, "lessons", p.fname), encoding="utf-8") as f:
-                html = f.read()
-            self.assertIn(ZH_PLACEHOLDER, html, p.fname)
-            self.assertIn(EN_PLACEHOLDER, html, p.fname)
+        # Targets lesson BODY content (not just chrome) in a content-agnostic
+        # way: render each lesson function through both i18n passes and assert
+        # both renders are non-empty AND differ. Differing output proves the
+        # lesson actually routed prose through t(...). This holds for the real
+        # lessons (01-03) and the remaining stubs (04-23) alike.
+        for fname, fn in registry.CONTENT.items():
+            zh = fn(i18n.t_zh)
+            en = fn(i18n.t_en)
+            self.assertTrue(zh.strip(), f"{fname}: empty zh render")
+            self.assertTrue(en.strip(), f"{fname}: empty en render")
+            self.assertNotEqual(
+                zh, en, f"{fname}: zh and en renders identical (missing t(...)?)"
+            )
 
     def test_stale_file_cleanup(self):
         junk = os.path.join(ROOT, "lessons", "99-junk.html")
@@ -92,7 +98,10 @@ class TestBuildPipeline(unittest.TestCase):
             )
 
     def test_stub_render_through_pipeline(self):
-        with open(os.path.join(ROOT, "lessons", "01-what-is-ga.html"), encoding="utf-8") as f:
+        # Verifies a still-stub lesson renders both i18n passes end-to-end
+        # through the build pipeline. Lessons 01-03 now carry real content, so
+        # this targets a remaining stub page (04-install.html).
+        with open(os.path.join(ROOT, "lessons", "04-install.html"), encoding="utf-8") as f:
             html = f.read()
         zh = html.split('<div class="zh">', 1)[1].split('<div class="en">', 1)[0]
         en = html.split('<div class="en">', 1)[1]
