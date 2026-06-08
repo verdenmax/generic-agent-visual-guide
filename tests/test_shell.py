@@ -39,6 +39,18 @@ class TestPages(unittest.TestCase):
             ("fname", "title_zh", "title_en", "part_zh", "part_en"),
         )
 
+    def test_subtitles_page_key_parity(self):
+        page_fnames = {p.fname for p in shell.PAGES}
+        self.assertEqual(set(shell.SUBTITLES.keys()), page_fnames)
+        for fname, value in shell.SUBTITLES.items():
+            self.assertIsInstance(value, tuple, f"{fname} subtitle not a tuple")
+            self.assertEqual(len(value), 2, f"{fname} subtitle not a 2-tuple")
+            zh, en = value
+            self.assertTrue(zh, f"{fname} missing subtitle zh")
+            self.assertTrue(en, f"{fname} missing subtitle en")
+            self.assertIsInstance(zh, str, f"{fname} subtitle zh not a str")
+            self.assertIsInstance(en, str, f"{fname} subtitle en not a str")
+
 
 class TestPage(unittest.TestCase):
     def setUp(self):
@@ -106,6 +118,15 @@ class TestPageNav(unittest.TestCase):
         html = shell.page("01-what-is-ga.html", "C", home_href="../start.html")
         self.assertIn('href="../start.html"', html)
 
+    def test_unknown_fname_raises_keyerror(self):
+        with self.assertRaises(KeyError):
+            shell.page("does-not-exist.html", "X")
+
+    def test_toggle_js_pins_bilingual_button_contract(self):
+        html = shell.page("01-what-is-ga.html", "C")
+        self.assertIn("'EN'", html)
+        self.assertIn("'中'", html)
+
 
 class TestProgress(unittest.TestCase):
     def test_last_lesson_pct_100(self):
@@ -163,6 +184,17 @@ class TestIndexPage(unittest.TestCase):
     def test_bilingual_css_rules(self):
         self.assertIn("html.lang-zh .en", self.html)
         self.assertIn("html.lang-en .zh", self.html)
+
+    def test_all_six_part_headers_present_in_order(self):
+        labels = ["第一部分", "第二部分", "第三部分", "第四部分", "第五部分", "第六部分"]
+        for label in labels:
+            self.assertIn(label, self.html, f"{label} missing from index_page")
+        positions = [self.html.index(label) for label in labels]
+        self.assertEqual(
+            positions,
+            sorted(positions),
+            "part headers not in top-to-bottom order",
+        )
 
 
 if __name__ == "__main__":

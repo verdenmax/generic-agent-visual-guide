@@ -430,7 +430,10 @@ def page(fname, content, home_href="../index.html"):
     links always use bare filenames, so lessons must share one directory. All
     navigation uses plain relative ``href`` links (no ``data-nav``).
     """
-    idx = next(i for i, p in enumerate(PAGES) if p.fname == fname)
+    try:
+        idx = next(i for i, p in enumerate(PAGES) if p.fname == fname)
+    except StopIteration:
+        raise KeyError(f"{fname!r} not in PAGES") from None
     p = PAGES[idx]
     total = len(PAGES)
     pct = round((idx + 1) / total * 100)
