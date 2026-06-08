@@ -4,6 +4,30 @@ Each lesson is a ``lesson(t)`` function. ``t('中文', 'English')`` wraps every
 piece of prose; structure, diagrams and code are written once and shared by
 both language renders. All technical claims are grounded in the real
 GenericAgent source (README.md, agent_loop.py, llmcore.py, agentmain.py, ga.py).
+
+Authoring conventions (follow these when adding/editing lessons)
+----------------------------------------------------------------
+5-card lesson format — every completed lesson opens with a ``<p class="lead">``
+intro paragraph, then presents these five cards in order (the structural test
+``test_completed_lessons_follow_card_format`` enforces their presence):
+
+    1. ``card macro``   🌍 The Big Picture — high-level framing.
+    2. ``card detail``  🔬 In the Source   — concrete source-code grounding.
+    3. ``card analogy`` 🧩 Analogy         — an everyday-life analogy.
+    4. ``card key``     ✅ Key Takeaways   — bullet summary.
+    5. ``card spark``   💡 Design Insight  — the "aha" design point.
+
+``.inline`` vs ``.mono`` — pick by CONTEXT, not by content:
+
+    * ``.inline`` (pill with a background) → for inline code / identifiers that
+      appear in PROSE: file names, symbols, commands. Example:
+      ``<span class="inline">agent_loop.py: agent_runner_loop</span>``.
+    * ``.mono`` (monospace, no pill) → ONLY inside dense components where a pill
+      would be too heavy: ``table.t`` cells, ``.flow``/``.vflow`` node text, and
+      ``.layer .name``.
+
+Any visible words must stay wrapped in ``t('zh','en')``; pure numerals/symbols
+(e.g. badge text ``①②③④``) need no translation.
 """
 
 
@@ -204,14 +228,14 @@ def lesson_02(t):
 
         + '<h2>' + t('四层结构', 'Four layers') + '</h2>'
         + '<div class="layers">'
-        + '<div class="layer l-core"><div class="lh"><span class="badge">L0</span>'
+        + '<div class="layer l-core"><div class="lh"><span class="badge">①</span>'
         + '<span class="name">agent_loop.py · llmcore.py</span></div>'
         + '<div class="ld">' + t(
             '最内核。agent_loop.py 是约 100 行的自主循环；llmcore.py 是 LLM 客户端，负责 chat、'
             '流式输出与工具调用解析。',
             'The innermost core. agent_loop.py is the ~100-line autonomous loop; llmcore.py is the '
             'LLM client handling chat, streaming, and tool-call parsing.') + '</div></div>'
-        + '<div class="layer l-main"><div class="lh"><span class="badge">L1</span>'
+        + '<div class="layer l-main"><div class="lh"><span class="badge">②</span>'
         + '<span class="name">agentmain.py · ga.py</span></div>'
         + '<div class="ld">' + t(
             '装配层。agentmain.py 把系统提示词、工具 schema、会话与 handler 接到循环上；'
@@ -219,7 +243,7 @@ def lesson_02(t):
             'The assembly layer. agentmain.py wires the system prompt, tools schema, session and '
             'handler into the loop; ga.py\'s GenericAgentHandler implements the 9 atomic tools as '
             'do_&lt;tool&gt; methods.') + '</div></div>'
-        + '<div class="layer l-part"><div class="lh"><span class="badge">L2</span>'
+        + '<div class="layer l-part"><div class="lh"><span class="badge">③</span>'
         + '<span class="name">memory/ · reflect/ · plugins/</span></div>'
         + '<div class="ld">' + t(
             '经验层。memory/ 存放分层记忆与各类 SOP（.md 流程文档）；reflect/ 负责编排（如 goal_mode、'
@@ -227,7 +251,7 @@ def lesson_02(t):
             'The experience layer. memory/ holds layered memory and SOPs (.md procedure docs); '
             'reflect/ handles orchestration (e.g. goal_mode, scheduler); plugins/ instruments the '
             'loop at key points via hooks.') + '</div></div>'
-        + '<div class="layer l-app"><div class="lh"><span class="badge">L3</span>'
+        + '<div class="layer l-app"><div class="lh"><span class="badge">④</span>'
         + '<span class="name">frontends/ · ga_cli/ · simphtml.py</span></div>'
         + '<div class="ld">' + t(
             '外壳层。frontends/ 提供桌面端、TUI、各类 IM 机器人；ga_cli/ 是命令行入口；'
@@ -504,10 +528,10 @@ def lesson_03(t):
         + t('设计亮点', 'Design Insight') + '</div>'
         + '<p>'
         + t(
-            '注意那一行 <span class="mono">messages = [{...新消息...}]</span>：每轮只往下传<strong>一条新消息</strong>，'
+            '注意那一行 <span class="inline">messages = [{...新消息...}]</span>：每轮只往下传<strong>一条新消息</strong>，'
             '而不是把越滚越长的历史整段重发。完整历史交给 Session 维护，循环只搬运“这一步的增量”。'
             '正是这个小设计，让上下文长期保持在 30K 以内——省 token、少噪声、更稳定，全都源于此。',
-            'Notice the line <span class="mono">messages = [{...new message...}]</span>: each turn '
+            'Notice the line <span class="inline">messages = [{...new message...}]</span>: each turn '
             'passes only <strong>one new message</strong> downward, instead of re-sending an '
             'ever-growing transcript. The full history is kept by the Session, and the loop carries '
             'just "the delta of this step". This small choice is exactly what keeps the context under '

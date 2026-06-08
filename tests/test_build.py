@@ -109,6 +109,20 @@ class TestBuildPipeline(unittest.TestCase):
         self.assertIn(EN_PLACEHOLDER, en)
 
 
+    def test_completed_lessons_follow_card_format(self):
+        # Validates the 5-card template for every COMPLETED lesson and
+        # auto-skips stubs, so it scales to all 23 lessons with no future edits.
+        required = ['card macro', 'card detail', 'card analogy', 'card key', 'card spark']
+        for fname, fn in registry.CONTENT.items():
+            en = fn(i18n.t_en)
+            if EN_PLACEHOLDER in en:
+                continue  # still a stub; skip
+            zh = fn(i18n.t_zh)
+            self.assertIn('class="lead"', zh, f"{fname}: missing lead paragraph")
+            for cls in required:
+                self.assertIn(cls, zh, f"{fname}: missing {cls} card")
+
+
 class TestCheckLinksAnchors(unittest.TestCase):
     """Unit-style tests for anchor-aware check_links.check(root=...)."""
 
