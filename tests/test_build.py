@@ -134,6 +134,53 @@ class TestBuildPipeline(unittest.TestCase):
             for cls in required:
                 self.assertIn(cls, zh, f"{fname}: missing {cls} card")
 
+    # Lessons confirmed "deepened" (≥2 deep-dive accordions). Grows as each
+    # lesson is thickened; keeps the suite green between per-lesson commits
+    # while enforcing the depth contract on completed lessons.
+    DEEPENED = set()
+
+    def test_deepened_lessons_have_accordions(self):
+        # Every deepened tutorial lesson must carry >= 2 deep-dive accordions.
+        for fname in self.DEEPENED:
+            zh = registry.CONTENT[fname](i18n.t_zh)
+            self.assertGreaterEqual(
+                zh.count('class="accordion"'), 2,
+                f"{fname}: expected >= 2 deep-dive accordions",
+            )
+
+    def test_all_pages_html_balanced(self):
+        # Every built page must have balanced (void-aware) HTML tags.
+        from html.parser import HTMLParser
+        void = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+                'link', 'meta', 'param', 'source', 'track', 'wbr'}
+
+        class _Bal(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.stack, self.err = [], []
+
+            def handle_starttag(self, tag, attrs):
+                if tag not in void:
+                    self.stack.append(tag)
+
+            def handle_endtag(self, tag):
+                if tag in void:
+                    return
+                if not self.stack or self.stack[-1] != tag:
+                    self.err.append(tag)
+                else:
+                    self.stack.pop()
+
+        pages = [os.path.join(ROOT, "index.html")] + [
+            os.path.join(ROOT, "lessons", p.fname) for p in shell.PAGES
+        ]
+        for path in pages:
+            with open(path, encoding="utf-8") as f:
+                p = _Bal()
+                p.feed(f.read())
+            self.assertEqual(p.stack, [], f"{os.path.basename(path)}: unclosed {p.stack[-3:]}")
+            self.assertEqual(p.err, [], f"{os.path.basename(path)}: stray closes {p.err[:3]}")
+
 
 class TestCheckLinksAnchors(unittest.TestCase):
     """Unit-style tests for anchor-aware check_links.check(root=...)."""
