@@ -248,11 +248,11 @@ def lesson_16(t):
 
         + '<h2>' + t('两条输入通路', 'Two input paths') + '</h2>'
         + '<div class="cols">'
-        + '<div class="col"><h4>' + t('桌面：鼠标键盘', 'Desktop: mouse & keyboard') + '</h4><p>'
+        + '<div class="col"><h3>' + t('桌面：鼠标键盘', 'Desktop: mouse & keyboard') + '</h3><p>'
         + t('ljqCtrl 用 Click(x,y)、SetCursorPos、Press("ctrl+v") 等操作，全程<strong>物理坐标</strong>，并提供 DPI 安全的窗口截图。',
             'ljqCtrl uses Click(x,y), SetCursorPos, Press("ctrl+v") and more, all in <strong>physical '
             'coordinates</strong>, plus DPI-safe window capture.') + '</p></div>'
-        + '<div class="col"><h4>' + t('移动：ADB 安卓', 'Mobile: ADB Android') + '</h4><p>'
+        + '<div class="col"><h3>' + t('移动：ADB 安卓', 'Mobile: ADB Android') + '</h3><p>'
         + t('adb_ui 优先用 uiautomator2 dump 界面层级（动画密集的 App 更稳），原生 adb 兜底，必要时配合视觉补盲。',
             'adb_ui prefers uiautomator2 to dump the UI hierarchy (steadier for animation-heavy apps), with native '
             'adb as fallback, aided by vision when needed.') + '</p></div>'
@@ -836,19 +836,19 @@ def lesson_19(t):
 
         + '<h2>' + t('自治是怎么触发的', 'How autonomy gets triggered') + '</h2>'
         + '<div class="vflow">'
-        + '<div class="step"><div class="num">1</div><div class="sc"><h4>'
-        + t('探针周期检查', 'Probe checks periodically') + '</h4><p>'
+        + '<div class="step"><div class="num">1</div><div class="sc"><h3>'
+        + t('探针周期检查', 'Probe checks periodically') + '</h3><p>'
         + t('如 autonomous.py 每隔 30 分钟检查一次。', 'e.g. autonomous.py checks every 30 minutes.') + '</p></div></div>'
-        + '<div class="step"><div class="num">2</div><div class="sc"><h4>'
-        + t('满足条件 → 唤醒', 'Condition met → wake') + '</h4><p>'
+        + '<div class="step"><div class="num">2</div><div class="sc"><h3>'
+        + t('满足条件 → 唤醒', 'Condition met → wake') + '</h3><p>'
         + t('检测到“用户离开超过 30 分钟”，返回一句自治提示唤醒 Agent。',
             'On detecting "user away for over 30 minutes", it returns an autonomy prompt to wake the agent.') + '</p></div></div>'
-        + '<div class="step"><div class="num">3</div><div class="sc"><h4>'
-        + t('读 SOP 自驱', 'Read SOP, self-drive') + '</h4><p>'
+        + '<div class="step"><div class="num">3</div><div class="sc"><h3>'
+        + t('读 SOP 自驱', 'Read SOP, self-drive') + '</h3><p>'
         + t('Agent 按 autonomous_operation_sop 持续执行自动任务。',
             'The agent keeps running automated tasks per autonomous_operation_sop.') + '</p></div></div>'
-        + '<div class="step"><div class="num">4</div><div class="sc"><h4>'
-        + t('留痕 / 结算', 'Trace / settle') + '</h4><p>'
+        + '<div class="step"><div class="num">4</div><div class="sc"><h3>'
+        + t('留痕 / 结算', 'Trace / settle') + '</h3><p>'
         + t('过程写入工作便签，重要经验结晶进长期记忆，会话归入 L4。',
             'Progress goes to the working notepad, key lessons crystallize into long-term memory, sessions archive to L4.') + '</p></div></div>'
         + '</div>'

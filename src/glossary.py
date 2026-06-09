@@ -33,18 +33,18 @@ def lesson_23(t):
 
         + '<h2>' + t('学习路径 / Reading paths', 'Reading paths') + '</h2>'
         + '<div class="cols">'
-        + '<div class="col"><h4>' + t('🚀 快速上手', '🚀 Get going') + '</h4><p>'
+        + '<div class="col"><h3>' + t('🚀 快速上手', '🚀 Get going') + '</h3><p>'
         + t('只想先用起来：', 'Just want to use it: ')
         + '<a href="01-what-is-ga.html">01</a> → <a href="04-install.html">04</a> → '
         + '<a href="05-frontends.html">05</a> → <a href="06-commands.html">06</a> → '
         + '<a href="07-tools.html">07</a></p></div>'
-        + '<div class="col"><h4>' + t('🔬 懂原理', '🔬 Understand internals') + '</h4><p>'
+        + '<div class="col"><h3>' + t('🔬 懂原理', '🔬 Understand internals') + '</h3><p>'
         + t('想读懂源码：', 'Want to read the source: ')
         + '<a href="08-agent-loop.html">08</a> → <a href="09-llmcore.html">09</a> → '
         + '<a href="10-handler-dispatch.html">10</a> → <a href="11-layered-memory.html">11</a> → '
         + '<a href="12-memory-crystallize.html">12</a> → <a href="13-hooks-observability.html">13</a> → '
         + '<a href="14-context-tokens.html">14</a></p></div>'
-        + '<div class="col"><h4>' + t('🧬 进阶玩法', '🧬 Go further') + '</h4><p>'
+        + '<div class="col"><h3>' + t('🧬 进阶玩法', '🧬 Go further') + '</h3><p>'
         + t('想玩到底：', 'Want the deep end: ')
         + '<a href="15-vision.html">15</a> → <a href="16-input-mobile.html">16</a> → '
         + '<a href="17-browser.html">17</a> → <a href="18-reflect-orchestration.html">18</a> → '

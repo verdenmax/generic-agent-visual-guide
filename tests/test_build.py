@@ -249,5 +249,60 @@ class TestCheckLinksAnchors(unittest.TestCase):
             )
 
 
-if __name__ == "__main__":
-    unittest.main()
+class TestAccessibility(unittest.TestCase):
+    """Regression tests for the accessibility fixes (heading outline, landmarks,
+    plain-text aria-labels). Each fix originates in ``shell.py`` / the lesson
+    generators, so these guard every built page at once."""
+
+    @classmethod
+    def setUpClass(cls):
+        build.build()
+        cls.pages = {
+            "index.html": os.path.join(ROOT, "index.html"),
+            **{p.fname: os.path.join(ROOT, "lessons", p.fname) for p in shell.PAGES},
+        }
+
+    @staticmethod
+    def _headings(html):
+        import re
+        return [int(h) for h in re.findall(r"<h([1-6])\b", html)]
+
+    def test_no_heading_level_skips(self):
+        # Screen-reader outline (WCAG 1.3.1): a heading may go one level deeper
+        # at a time only (h2 -> h3, never h2 -> h4).
+        for name, path in self.pages.items():
+            with open(path, encoding="utf-8") as f:
+                levels = self._headings(f.read())
+            prev = 0
+            for h in levels:
+                if prev:
+                    self.assertLessEqual(
+                        h, prev + 1, f"{name}: heading jumps {prev}->{h} (skips a level)"
+                    )
+                prev = h
+
+    def test_semantic_landmarks_present(self):
+        # Interactive pages expose <header>, <main> and a labelled <nav>.
+        for name, path in self.pages.items():
+            with open(path, encoding="utf-8") as f:
+                s = f.read()
+            self.assertIn('<header class="topbar">', s, f"{name}: no <header>")
+            self.assertIn('<main class="wrap">', s, f"{name}: no <main>")
+            self.assertIn("</main>", s, f"{name}: unclosed <main>")
+            if name == "index.html":
+                self.assertIn('<nav class="toc"', s, f"{name}: no toc <nav>")
+            else:
+                self.assertIn('<nav class="footnav"', s, f"{name}: no footnav <nav>")
+
+    def test_aria_labels_are_plain_text(self):
+        # Regression: aria-label values must be plain text, never bi()/markup
+        # (a '<' inside an attribute corrupts parsing).
+        import re
+        for name, path in self.pages.items():
+            with open(path, encoding="utf-8") as f:
+                s = f.read()
+            for val in re.findall(r'aria-label="([^"]*)"', s):
+                self.assertNotIn("<", val, f"{name}: markup leaked into aria-label: {val!r}")
+
+
+

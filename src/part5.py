@@ -43,19 +43,19 @@ def lesson_20(t):
 
         + '<h2>' + t('自进化闭环', 'The self-evolution loop') + '</h2>'
         + '<div class="vflow">'
-        + '<div class="step"><div class="num">1</div><div class="sc"><h4>'
-        + t('新任务', 'New task') + '</h4><p>'
+        + '<div class="step"><div class="num">1</div><div class="sc"><h3>'
+        + t('新任务', 'New task') + '</h3><p>'
         + t('来了一件它还不会的事。', 'Something it cannot yet do arrives.') + '</p></div></div>'
-        + '<div class="step"><div class="num">2</div><div class="sc"><h4>'
-        + t('自主探索', 'Autonomous exploration') + '</h4><p>'
+        + '<div class="step"><div class="num">2</div><div class="sc"><h3>'
+        + t('自主探索', 'Autonomous exploration') + '</h3><p>'
         + t('用 code_run 装依赖、写脚本、调试，直到<strong>行动验证成功</strong>。',
             'Use code_run to install deps, write scripts, debug, until <strong>action-verified success</strong>.') + '</p></div></div>'
-        + '<div class="step"><div class="num">3</div><div class="sc"><h4>'
-        + t('结晶为 Skill', 'Crystallize into a Skill') + '</h4><p>'
+        + '<div class="step"><div class="num">3</div><div class="sc"><h3>'
+        + t('结晶为 Skill', 'Crystallize into a Skill') + '</h3><p>'
         + t('start_long_term_update 把要点写进 L3 SOP，并在 L1 索引登记。',
             'start_long_term_update writes the essentials into an L3 SOP and registers it in the L1 index.') + '</p></div></div>'
-        + '<div class="step"><div class="num">4</div><div class="sc"><h4>'
-        + t('下次直接召回', 'Direct recall next time') + '</h4><p>'
+        + '<div class="step"><div class="num">4</div><div class="sc"><h3>'
+        + t('下次直接召回', 'Direct recall next time') + '</h3><p>'
         + t('相似任务再来，顺着 L1 索引找到 SOP，一步到位。',
             'When a similar task returns, follow the L1 index to the SOP and do it in one shot.') + '</p></div></div>'
         + '</div>'
@@ -293,20 +293,20 @@ def lesson_21(t):
 
         + '<h2>' + t('第一次：从零摸索', 'First time: from scratch') + '</h2>'
         + '<div class="vflow">'
-        + '<div class="step"><div class="num">1</div><div class="sc"><h4>'
-        + t('记住目标', 'Capture the goal') + '</h4><p>'
+        + '<div class="step"><div class="num">1</div><div class="sc"><h3>'
+        + t('记住目标', 'Capture the goal') + '</h3><p>'
         + t('收到任务，先用 update_working_checkpoint 记下“要读微信记录”和关键约束。',
             'On receiving the task, use update_working_checkpoint to note "read WeChat messages" and key constraints.') + '</p></div></div>'
-        + '<div class="step"><div class="num">2</div><div class="sc"><h4>'
-        + t('探索与试错', 'Explore & iterate') + '</h4><p>'
+        + '<div class="step"><div class="num">2</div><div class="sc"><h3>'
+        + t('探索与试错', 'Explore & iterate') + '</h3><p>'
         + t('用 code_run 装依赖、定位数据库、写读取脚本，失败就读报错再改。',
             'Use code_run to install deps, locate the database, write a read script; on failure, read the error and fix.') + '</p></div></div>'
-        + '<div class="step"><div class="num">3</div><div class="sc"><h4>'
-        + t('验证成功', 'Verify success') + '</h4><p>'
+        + '<div class="step"><div class="num">3</div><div class="sc"><h3>'
+        + t('验证成功', 'Verify success') + '</h3><p>'
         + t('真正跑通、读出消息——这一步是“能不能记忆”的前提（无行动，不记忆）。',
             'Actually run it and read out the messages — the prerequisite for "may we remember" (no execution, no memory).') + '</p></div></div>'
-        + '<div class="step"><div class="num">4</div><div class="sc"><h4>'
-        + t('结晶为技能', 'Crystallize a skill') + '</h4><p>'
+        + '<div class="step"><div class="num">4</div><div class="sc"><h3>'
+        + t('结晶为技能', 'Crystallize a skill') + '</h3><p>'
         + t('start_long_term_update：把脚本路径与关键坑点写成 L3 SOP，在 L1 索引登记一行。',
             'start_long_term_update: write the script path and key pitfalls into an L3 SOP, and register one line in the L1 index.') + '</p></div></div>'
         + '</div>'
@@ -483,16 +483,16 @@ def lesson_22(t):
 
         + '<h2>' + t('接入一个新平台', 'Wiring a new platform') + '</h2>'
         + '<div class="vflow">'
-        + '<div class="step"><div class="num">1</div><div class="sc"><h4>'
-        + t('接内核', 'Connect the core') + '</h4><p class="mono">from agentmain import GenericAgent</p><p>'
+        + '<div class="step"><div class="num">1</div><div class="sc"><h3>'
+        + t('接内核', 'Connect the core') + '</h3><p class="mono">from agentmain import GenericAgent</p><p>'
         + t('每个 frontends/*app.py 都从这里拿到同一套 Agent 入口。',
             'Every frontends/*app.py gets the same agent entry from here.') + '</p></div></div>'
-        + '<div class="step"><div class="num">2</div><div class="sc"><h4>'
-        + t('复用通用逻辑', 'Reuse common logic') + '</h4><p>'
+        + '<div class="step"><div class="num">2</div><div class="sc"><h3>'
+        + t('复用通用逻辑', 'Reuse common logic') + '</h3><p>'
         + t('命令（/new、/continue 等）与消息装配走 chatapp_common，不必重写。',
             'Commands (/new, /continue …) and message assembly go through chatapp_common; no rewriting.') + '</p></div></div>'
-        + '<div class="step"><div class="num">3</div><div class="sc"><h4>'
-        + t('写平台 I/O', 'Write platform I/O') + '</h4><p>'
+        + '<div class="step"><div class="num">3</div><div class="sc"><h3>'
+        + t('写平台 I/O', 'Write platform I/O') + '</h3><p>'
         + t('只剩平台特有的收发：监听消息 → 交给内核 → 把回复发回去。',
             'Only platform-specific I/O remains: listen for messages → hand to the core → send the reply back.') + '</p></div></div>'
         + '</div>'

@@ -18,7 +18,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg: #f6f7f9; --panel: #ffffff; --panel-2: #f0f2f5; --ink: #1d2129;
-  --muted: #5b6470; --faint: #8a939f; --line: #e1e5ea;
+  --muted: #5b6470; --faint: #646b74; --line: #e1e5ea;
   --accent: #5b4ddb; --accent-soft: #ece9fc; --accent-ink: #3a2ea3;
   --blue: #2563eb; --blue-soft: #e7efff; --amber: #b4690e; --amber-soft: #fdf1dd;
   --purple: #7c3aed; --purple-soft: #f0e9ff; --red: #d23f3f; --red-soft: #fbe6e6;
@@ -29,7 +29,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0e1116; --panel: #161b22; --panel-2: #1c232c; --ink: #e6edf3;
-    --muted: #9aa6b2; --faint: #6e7a86; --line: #2a323c;
+    --muted: #9aa6b2; --faint: #8a96a3; --line: #2a323c;
     --accent: #9d8df3; --accent-soft: #211b46; --accent-ink: #c9c0f8;
     --blue: #6ea8fe; --blue-soft: #16243f; --amber: #e0a44a; --amber-soft: #33270f;
     --purple: #b794f6; --purple-soft: #271a40; --red: #f08080; --red-soft: #3a1a1a;
@@ -179,7 +179,7 @@ pre.code .fn { color: #82aaff; } pre.code .st { color: #c3e88d; } pre.code .nb {
   width: 2px; background: var(--line); }
 .vflow .num { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #fff;
   display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .85rem; flex-shrink: 0; z-index:1; }
-.vflow .sc h4 { margin: .25rem 0 .2rem; font-size: 1rem; }
+.vflow .sc h3 { margin: .25rem 0 .2rem; font-size: 1rem; }
 .vflow .sc p { margin: .15rem 0; font-size: .92rem; color: var(--muted); }
 .vflow .sc .mono { font-size: .8rem; color: var(--accent-ink); }
 
@@ -200,7 +200,7 @@ pre.code .fn { color: #82aaff; } pre.code .st { color: #c3e88d; } pre.code .nb {
 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.2rem 0; }
 @media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
 .col { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; box-shadow: var(--shadow); min-width: 0; }
-.col h4 { margin: 0 0 .4rem; font-size: .95rem; }
+.col h3 { margin: 0 0 .4rem; font-size: .95rem; }
 
 table.t { width: 100%; border-collapse: collapse; margin: 1.1rem 0; font-size: .9rem;
   background: var(--panel); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
@@ -268,7 +268,7 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
 .pdf-btn:hover { background:var(--accent-ink); transform:translateY(-1px); }
 </style>
 </head><body>
-<div class="topbar">
+<header class="topbar">
   <div class="topbar-inner">
     <a class="home" href="../index.html">📘 <span class="zh">GenericAgent 图解教程</span><span class="en">GenericAgent Visual Guide</span> · <b><span class="zh">目录</span><span class="en">Contents</span></b></a>
     <span class="pill"><span class="zh">第四部分 · 进阶能力</span><span class="en">Part 4 · Advanced Capabilities</span></span>
@@ -277,8 +277,8 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
     <button class="lang-btn" id="langbtn" type="button" aria-label="切换语言 / Toggle language">EN</button>
   </div>
   <div class="progress"><span style="width:78%"></span></div>
-</div>
-<div class="wrap">
+</header>
+<main class="wrap">
   <div class="hero">
     <div class="part"><span class="zh">第四部分 · 进阶能力</span><span class="en">Part 4 · Advanced Capabilities</span></div>
     <h1><span class="zh">反思与编排</span><span class="en">Reflection & Orchestration</span></h1>
@@ -294,8 +294,8 @@ ONCE = <span class="nb">False</span>
 <span class="kw">def</span> <span class="fn">check</span>():
     <span class="cm"># return str = wake prompt; return None = skip</span>
     <span class="kw">return</span> <span class="st">'[AUTO]...'</span></pre></div></div></div><div class="qa"><div class="q">How agentmain drives it</div><div class="a"><p>Launched via <span class="inline">agentmain.py --reflect reflect/&lt;module&gt;.py</span>, the main program dynamically imports the module, calls <span class="inline">init(a)</span> first if present (passing in extra <span class="mono">--key value</span>-style args), then loops: every <span class="inline">INTERVAL</span> seconds it calls <span class="inline">check()</span>, and on a non-empty return it injects the agent via <span class="inline">put_task(task, source='reflect')</span>.</p></div></div><div class="qa"><div class="q">Hot reload</div><div class="a"><p>agentmain records the script's mtime and checks each round whether the file changed; if so it <span class="mono">exec_module</span>s to reload and calls init again. So you can <strong>edit the reflection logic while it runs</strong> without restarting the agent.</p></div></div></div></details><details class="accordion"><summary><span class="badge-num">2</span> goal_mode: self-drive to the budget's end <span class="hint">click to expand</span></summary><div class="acc-body"><div class="qa"><div class="q">State and budget</div><div class="a"><p><span class="inline">goal_mode.py</span> uses <span class="inline">INTERVAL=3</span> (re-check the moment a run finishes). It reads the json pointed to by <span class="inline">GOAL_STATE</span>, holding <span class="mono">objective</span>, <span class="mono">start_time</span>, <span class="mono">budget_seconds</span> and <span class="mono">turns_used / max_turns</span>. Each round it computes elapsed/remaining time, returns a continuation prompt and increments the turn.</p></div></div><div class="qa"><div class="q">Two prompts</div><div class="a"><p>While budget remains it returns <span class="inline">CONTINUATION_PROMPT</span> ("do not say done/continue, do not stop before the budget"); when <span class="mono">remaining&lt;=0</span> or <span class="mono">turn&gt;max_turns</span> it returns <span class="inline">BUDGET_LIMIT_PROMPT</span> for a final wrap-up round, then returns <span class="mono">/exit</span> to finish.</p></div></div><div class="qa"><div class="q">Why forbid "early delivery"</div><div class="a"><p>Models naturally tend to declare "done" as soon as possible. Goal Mode instead forces them to <strong>spend the whole time budget</strong>: each round take a different angle (tests/edge cases/performance/security/polish) to keep refining the same core deliverable, turning "works" into "works well".</p></div></div></div></details><details class="accordion"><summary><span class="badge-num">3</span> scheduler's port lock and a module comparison <span class="hint">click to expand</span></summary><div class="acc-body"><div class="qa"><div class="q">Port lock prevents double-start</div><div class="a"><p><span class="inline">scheduler.py</span> does a module-top <span class="mono">bind('127.0.0.1', 45762)</span>: if a scheduler is already running, the second bind fails and crashes agentmain out, <strong>guaranteeing exactly one scheduler per machine</strong>. A <span class="mono">try: _lock except NameError</span> guard skips re-binding on hot reload.</p></div></div><div class="qa"><div class="q">repeat cooldowns</div><div class="a"><p>It scans tasks under <span class="mono">sche_tasks/</span> and uses <span class="inline">_parse_cooldown(repeat)</span> to convert daily/weekly/monthly/<span class="mono">every_2h</span> into cooldowns (slightly shorter than the period to avoid drift); it fires only when due, undone, and within the <span class="mono">DEFAULT_MAX_DELAY</span> window, archiving finished runs to <span class="mono">sche_tasks/done</span>.</p></div></div><div class="qa"><div class="q">Board vs job-board</div><div class="a"><p><span class="inline">checklist_master.py</span> polls a <span class="mono">state.json</span> (which may attach a BBS for mapreduce) and assigns items; <span class="inline">agent_team_worker.py</span> is the worker side, whose <span class="inline">check()</span> pre-checks the BBS (<span class="mono">/posts?limit=10</span>), returns None to skip when there is nothing new, and only on a new post returns a "claim — execute — report" prompt. The BBS service itself is <span class="inline">assets/agent_bbs.py</span>.</p></div></div></div></details><div class="card analogy"><div class="tag">🧩 Analogy</div>Like giving a heads-down worker several <strong>different foremen</strong>: the goal foreman insists "do not stop until this is done", the scheduling foreman calls "it is time, go do that", the board foreman assigns items off a checklist, and the job-board foreman picks up postings. The worker (the agent loop) is the same worker; the foremen decide <strong>when and why</strong> he starts moving again.</div><div class="card key"><div class="tag">✅ Key Takeaways</div><ul><li>reflect/ modules are periodic probes outside the loop; check() decides whether to wake the agent.</li><li>Four styles: goal self-drive, timed scheduling, checklist master, team job-board.</li><li>Launched via agentmain.py --reflect; the convention is INTERVAL / init / check.</li></ul></div><div class="card spark"><div class="tag">💡 Design Insight</div>Orchestration is not stuffed into the core loop but abstracted into a layer of <strong>uniformly-agreed probes</strong>: every style — self-drive, scheduling, boards, collaboration — reduces to the same question, "<span class="inline">should check() wake it this time, and with what prompt</span>". So "add a new orchestration" = "write a new reflect module", while the core stays 100 lines. Complex multi-agent behavior is <strong>composed</strong> from simple probes.</div></div>
-  <div class="footnav"><a class="prev" href="17-browser.html"><div class="dir"><span class="zh">← 上一课</span><span class="en">← Prev</span></div><div class="ttl"><span class="zh">浏览器注入与 Web 工具</span><span class="en">Browser Injection & Web Tools</span></div></a><a class="next" href="19-autonomy.html"><div class="dir"><span class="zh">下一课 →</span><span class="en">Next →</span></div><div class="ttl"><span class="zh">长期自治与定时任务</span><span class="en">Long-Horizon Autonomy</span></div></a></div>
-</div>
+  <nav class="footnav" aria-label="课程导航 / Lesson navigation"><a class="prev" href="17-browser.html"><div class="dir"><span class="zh">← 上一课</span><span class="en">← Prev</span></div><div class="ttl"><span class="zh">浏览器注入与 Web 工具</span><span class="en">Browser Injection & Web Tools</span></div></a><a class="next" href="19-autonomy.html"><div class="dir"><span class="zh">下一课 →</span><span class="en">Next →</span></div><div class="ttl"><span class="zh">长期自治与定时任务</span><span class="en">Long-Horizon Autonomy</span></div></a></nav>
+</main>
 <script>
 (function(){
   function cur(){ return (localStorage.getItem('galang')||'zh'); }

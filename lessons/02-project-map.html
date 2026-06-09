@@ -18,7 +18,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg: #f6f7f9; --panel: #ffffff; --panel-2: #f0f2f5; --ink: #1d2129;
-  --muted: #5b6470; --faint: #8a939f; --line: #e1e5ea;
+  --muted: #5b6470; --faint: #646b74; --line: #e1e5ea;
   --accent: #5b4ddb; --accent-soft: #ece9fc; --accent-ink: #3a2ea3;
   --blue: #2563eb; --blue-soft: #e7efff; --amber: #b4690e; --amber-soft: #fdf1dd;
   --purple: #7c3aed; --purple-soft: #f0e9ff; --red: #d23f3f; --red-soft: #fbe6e6;
@@ -29,7 +29,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0e1116; --panel: #161b22; --panel-2: #1c232c; --ink: #e6edf3;
-    --muted: #9aa6b2; --faint: #6e7a86; --line: #2a323c;
+    --muted: #9aa6b2; --faint: #8a96a3; --line: #2a323c;
     --accent: #9d8df3; --accent-soft: #211b46; --accent-ink: #c9c0f8;
     --blue: #6ea8fe; --blue-soft: #16243f; --amber: #e0a44a; --amber-soft: #33270f;
     --purple: #b794f6; --purple-soft: #271a40; --red: #f08080; --red-soft: #3a1a1a;
@@ -179,7 +179,7 @@ pre.code .fn { color: #82aaff; } pre.code .st { color: #c3e88d; } pre.code .nb {
   width: 2px; background: var(--line); }
 .vflow .num { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #fff;
   display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .85rem; flex-shrink: 0; z-index:1; }
-.vflow .sc h4 { margin: .25rem 0 .2rem; font-size: 1rem; }
+.vflow .sc h3 { margin: .25rem 0 .2rem; font-size: 1rem; }
 .vflow .sc p { margin: .15rem 0; font-size: .92rem; color: var(--muted); }
 .vflow .sc .mono { font-size: .8rem; color: var(--accent-ink); }
 
@@ -200,7 +200,7 @@ pre.code .fn { color: #82aaff; } pre.code .st { color: #c3e88d; } pre.code .nb {
 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.2rem 0; }
 @media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
 .col { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; box-shadow: var(--shadow); min-width: 0; }
-.col h4 { margin: 0 0 .4rem; font-size: .95rem; }
+.col h3 { margin: 0 0 .4rem; font-size: .95rem; }
 
 table.t { width: 100%; border-collapse: collapse; margin: 1.1rem 0; font-size: .9rem;
   background: var(--panel); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
@@ -268,7 +268,7 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
 .pdf-btn:hover { background:var(--accent-ink); transform:translateY(-1px); }
 </style>
 </head><body>
-<div class="topbar">
+<header class="topbar">
   <div class="topbar-inner">
     <a class="home" href="../index.html">📘 <span class="zh">GenericAgent 图解教程</span><span class="en">GenericAgent Visual Guide</span> · <b><span class="zh">目录</span><span class="en">Contents</span></b></a>
     <span class="pill"><span class="zh">第一部分 · 宏观全景</span><span class="en">Part 1 · The Big Picture</span></span>
@@ -277,8 +277,8 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
     <button class="lang-btn" id="langbtn" type="button" aria-label="切换语言 / Toggle language">EN</button>
   </div>
   <div class="progress"><span style="width:9%"></span></div>
-</div>
-<div class="wrap">
+</header>
+<main class="wrap">
   <div class="hero">
     <div class="part"><span class="zh">第一部分 · 宏观全景</span><span class="en">Part 1 · The Big Picture</span></div>
     <h1><span class="zh">项目全景地图</span><span class="en">Project Map</span></h1>
@@ -296,8 +296,8 @@ handler = <span class="fn">GenericAgentHandler</span>(self, self.history, <span 
 gen = <span class="fn">agent_runner_loop</span>(self.llmclient, sys_prompt, raw_query,
                         handler, TOOLS_SCHEMA, max_turns=<span class="nb">80</span>)
 </pre></div></div></div><div class="qa"><div class="q">The inheritance chain</div><div class="a"><p><span class="inline">ga.py</span> opens with <span class="inline">from agent_loop import BaseHandler, StepOutcome</span>, so <span class="inline">class GenericAgentHandler(BaseHandler)</span> <strong>inherits</strong> the dispatch machinery from the loop — it only has to supply the individual do_&lt;tool&gt; methods, while routing is provided by <span class="inline">BaseHandler.dispatch</span> in the parent. In short: the loop defines "how" to dispatch; the subclass fills in "where" to.</p></div></div><div class="qa"><div class="q">An easy detail to miss</div><div class="a"><p>The README and lessons often cite max_turns = 40 — that is the <strong>function default</strong> in <span class="inline">agent_runner_loop</span>. At runtime, though, <span class="inline">agentmain.py</span> explicitly passes <span class="mono">max_turns=80</span>. When reading source, separate "the default" from "the value the call site actually passes".</p></div></div></div></details><details class="accordion"><summary><span class="badge-num">3</span> The "rings around the LLM" mental model <span class="hint">click to expand</span></summary><div class="acc-body"><div class="qa"><div class="q">The four rings</div><div class="a"><table class="t"><tr><th>Ring</th><th>Files</th><th>Distance</th></tr><tr><td>Core</td><td class="mono">agent_loop.py · llmcore.py</td><td>closest</td></tr><tr><td>Assembly / tools</td><td class="mono">agentmain.py · ga.py</td><td>one ring out</td></tr><tr><td>Experience</td><td class="mono">memory/ · reflect/ · plugins/</td><td>two rings out</td></tr><tr><td>Shell</td><td class="mono">frontends/ · ga_cli/</td><td>farthest</td></tr></table></div></div><div class="qa"><div class="q">Why "rings", not just "layers"</div><div class="a"><p>"Rings" convey a direction: <strong>everything ultimately serves that innermost chat call</strong>. The shell gathers user intent, the experience layer decides which memory to feed, the assembly layer builds the prompt and tools, and finally the core hands it all to the LLM. Meet a new file and just ask "which ring, how far from the LLM?" — and you can already guess what it does.</p></div></div><div class="qa"><div class="q">vs a flat feature-folder layout</div><div class="a"><p>Many projects lay folders out flat by feature (api/, utils/, models/…) and you must read many files before the main thread emerges. GenericAgent's ring model has a built-in <strong>main thread</strong>: outer rings call inner ones, and the innermost lands on a single LLM call. That gives "where do I start reading?" one answer — start from the innermost <span class="inline">agent_loop.py</span>.</p></div></div></div></details><details class="accordion"><summary><span class="badge-num">4</span> Roughly how big: the five core files <span class="hint">click to expand</span></summary><div class="acc-body"><div class="qa"><div class="q">Line counts</div><div class="a"><table class="t"><tr><th>File</th><th>~lines</th></tr><tr><td class="mono">agent_loop.py</td><td class="mono">~133</td></tr><tr><td class="mono">llmcore.py</td><td class="mono">~1068</td></tr><tr><td class="mono">simphtml.py</td><td class="mono">~873</td></tr><tr><td class="mono">ga.py</td><td class="mono">~595</td></tr><tr><td class="mono">agentmain.py</td><td class="mono">~308</td></tr><tr><td>Total</td><td class="mono">~2977 ≈ 3K</td></tr></table></div></div><div class="qa"><div class="q">Why is llmcore.py the largest</div><div class="a"><p>Intuitively the "loop" should be the most complex, yet <span class="inline">agent_loop.py</span> is only ~133 lines. The real bulk sits in <span class="inline">llmcore.py</span> (~1068 lines), because it must adapt to many vendors' protocols (native OpenAI, native Claude, various mixins), handle streaming, and parse tool calls. "Thin loop, thick core" is exactly what "outsourcing complexity to the LLM ecosystem" looks like.</p></div></div></div></details><div class="card analogy"><div class="tag">🧩 Analogy</div><p>Picture a small restaurant: <span class="inline">agent_loop.py</span> is the kitchen's <strong>service rhythm</strong>, plating one dish after another; <span class="inline">llmcore.py</span> is the <strong>chef</strong> who actually cooks; the tools in <span class="inline">ga.py</span> are the <strong>pots and knives</strong>; <span class="inline">memory/</span> is the chef's growing <strong>recipe book</strong>; and <span class="inline">frontends/</span> is the <strong>front desk and menu</strong> that customers actually talk to.</p></div><div class="card key"><div class="tag">✅ Key Takeaways</div><ul><li>The whole project is a ~3K-line seed; the rest grows at runtime.</li><li>Read it as four rings by distance from the LLM: core → assembly → experience → shell.</li><li>agent_loop.py is the loop, llmcore.py the brain, ga.py the hands, memory/ the memory.</li><li>When lost, first ask: which ring am I in right now?</li></ul></div><div class="card spark"><div class="tag">💡 Design Insight</div><p>Notice that <span class="inline">memory/</span> is full of <strong>.md files</strong> (SOPs) rather than hard-coded logic. This is deliberate: procedures are distilled in natural language the model can read, edit and extend, so "adding a skill" often means "writing one more .md", not changing the framework. <strong>Putting capability into memory rather than into code</strong> is the structural reason it can self-evolve.</p></div></div>
-  <div class="footnav"><a class="prev" href="01-what-is-ga.html"><div class="dir"><span class="zh">← 上一课</span><span class="en">← Prev</span></div><div class="ttl"><span class="zh">GenericAgent 是什么</span><span class="en">What is GenericAgent</span></div></a><a class="next" href="03-task-lifecycle.html"><div class="dir"><span class="zh">下一课 →</span><span class="en">Next →</span></div><div class="ttl"><span class="zh">一次任务的生命周期</span><span class="en">Lifecycle of a Task</span></div></a></div>
-</div>
+  <nav class="footnav" aria-label="课程导航 / Lesson navigation"><a class="prev" href="01-what-is-ga.html"><div class="dir"><span class="zh">← 上一课</span><span class="en">← Prev</span></div><div class="ttl"><span class="zh">GenericAgent 是什么</span><span class="en">What is GenericAgent</span></div></a><a class="next" href="03-task-lifecycle.html"><div class="dir"><span class="zh">下一课 →</span><span class="en">Next →</span></div><div class="ttl"><span class="zh">一次任务的生命周期</span><span class="en">Lifecycle of a Task</span></div></a></nav>
+</main>
 <script>
 (function(){
   function cur(){ return (localStorage.getItem('galang')||'zh'); }

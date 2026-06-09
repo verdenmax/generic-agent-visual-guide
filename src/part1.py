@@ -633,26 +633,26 @@ def lesson_03(t):
         + '<h2>' + t('一次任务，分步走', 'One task, step by step') + '</h2>'
         + '<div class="vflow">'
         + '<div class="step"><div class="num">1</div><div class="sc">'
-        + '<h4>' + t('用户输入', 'User input') + '</h4>'
+        + '<h3>' + t('用户输入', 'User input') + '</h3>'
         + '<p>' + t('你的请求作为 user_input 进入循环。',
                    'Your request enters the loop as user_input.') + '</p></div></div>'
         + '<div class="step"><div class="num">2</div><div class="sc">'
-        + '<h4>' + t('组装初始 messages', 'Assemble initial messages') + '</h4>'
+        + '<h3>' + t('组装初始 messages', 'Assemble initial messages') + '</h3>'
         + '<p>' + t('循环先拼出 ', 'The loop builds ')
         + '<span class="mono">[{system_prompt}, {user_input}]</span>'
         + t(' 作为对话起点。', ' as the conversation\'s starting point.') + '</p></div></div>'
         + '<div class="step"><div class="num">3</div><div class="sc">'
-        + '<h4>' + t('调用大模型', 'Call the LLM') + '</h4>'
+        + '<h3>' + t('调用大模型', 'Call the LLM') + '</h3>'
         + '<p>'
         + '<span class="mono">client.chat(messages, tools=tools_schema)</span>'
         + t(' 返回一个 response，里面可能带 ', ' returns a response that may carry ')
         + '<span class="mono">response.tool_calls</span>' + t('。', '.') + '</p></div></div>'
         + '<div class="step"><div class="num">4</div><div class="sc">'
-        + '<h4>' + t('解析工具调用', 'Parse tool calls') + '</h4>'
+        + '<h3>' + t('解析工具调用', 'Parse tool calls') + '</h3>'
         + '<p>' + t('每个 tool_call 解析出 tool_name 和 args；如果模型没调任何工具，记为 no_tool。',
                    'Each tool_call yields a tool_name and args; if the model called nothing, it is recorded as no_tool.') + '</p></div></div>'
         + '<div class="step"><div class="num">5</div><div class="sc">'
-        + '<h4>' + t('派发并执行工具', 'Dispatch & run the tool') + '</h4>'
+        + '<h3>' + t('派发并执行工具', 'Dispatch & run the tool') + '</h3>'
         + '<p>'
         + '<span class="mono">handler.dispatch(tool_name, args, ...)</span>'
         + t(' 找到对应的 ', ' finds the matching ')
@@ -660,17 +660,17 @@ def lesson_03(t):
         + t(' 方法并运行（如 do_code_run、do_file_read）。',
             ' method and runs it (e.g. do_code_run, do_file_read).') + '</p></div></div>'
         + '<div class="step"><div class="num">6</div><div class="sc">'
-        + '<h4>' + t('返回 StepOutcome', 'Return a StepOutcome') + '</h4>'
+        + '<h3>' + t('返回 StepOutcome', 'Return a StepOutcome') + '</h3>'
         + '<p>' + t('每个工具返回 ', 'Each tool returns a ')
         + '<span class="mono">StepOutcome(data, next_prompt, should_exit)</span>'
         + t('：data 是结果，next_prompt 是下一轮要对模型说的话，should_exit 决定是否收尾。',
             ': data is the result, next_prompt is what to tell the model next turn, should_exit decides whether to wrap up.') + '</p></div></div>'
         + '<div class="step"><div class="num">7</div><div class="sc">'
-        + '<h4>' + t('结果写回 messages', 'Results flow into messages') + '</h4>'
+        + '<h3>' + t('结果写回 messages', 'Results flow into messages') + '</h3>'
         + '<p>' + t('工具的 data 收进 tool_results，next_prompt 合成下一轮唯一的新 user 消息；历史由 Session 维护。',
                    'Tool data collects into tool_results; the next_prompts merge into the single new user message; history is kept by the Session.') + '</p></div></div>'
         + '<div class="step"><div class="num">8</div><div class="sc">'
-        + '<h4>' + t('循环，直到收尾', 'Loop until done') + '</h4>'
+        + '<h3>' + t('循环，直到收尾', 'Loop until done') + '</h3>'
         + '<p>' + t('没有 next_prompt、有工具 should_exit、或达到 max_turns，循环结束并返回 exit_reason。',
                    'When there is no next_prompt, a tool signals should_exit, or max_turns is hit, the loop ends and returns an exit_reason.') + '</p></div></div>'
         + '</div>'

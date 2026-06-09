@@ -18,7 +18,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg: #f6f7f9; --panel: #ffffff; --panel-2: #f0f2f5; --ink: #1d2129;
-  --muted: #5b6470; --faint: #8a939f; --line: #e1e5ea;
+  --muted: #5b6470; --faint: #646b74; --line: #e1e5ea;
   --accent: #5b4ddb; --accent-soft: #ece9fc; --accent-ink: #3a2ea3;
   --blue: #2563eb; --blue-soft: #e7efff; --amber: #b4690e; --amber-soft: #fdf1dd;
   --purple: #7c3aed; --purple-soft: #f0e9ff; --red: #d23f3f; --red-soft: #fbe6e6;
@@ -29,7 +29,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0e1116; --panel: #161b22; --panel-2: #1c232c; --ink: #e6edf3;
-    --muted: #9aa6b2; --faint: #6e7a86; --line: #2a323c;
+    --muted: #9aa6b2; --faint: #8a96a3; --line: #2a323c;
     --accent: #9d8df3; --accent-soft: #211b46; --accent-ink: #c9c0f8;
     --blue: #6ea8fe; --blue-soft: #16243f; --amber: #e0a44a; --amber-soft: #33270f;
     --purple: #b794f6; --purple-soft: #271a40; --red: #f08080; --red-soft: #3a1a1a;
@@ -179,7 +179,7 @@ pre.code .fn { color: #82aaff; } pre.code .st { color: #c3e88d; } pre.code .nb {
   width: 2px; background: var(--line); }
 .vflow .num { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #fff;
   display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .85rem; flex-shrink: 0; z-index:1; }
-.vflow .sc h4 { margin: .25rem 0 .2rem; font-size: 1rem; }
+.vflow .sc h3 { margin: .25rem 0 .2rem; font-size: 1rem; }
 .vflow .sc p { margin: .15rem 0; font-size: .92rem; color: var(--muted); }
 .vflow .sc .mono { font-size: .8rem; color: var(--accent-ink); }
 
@@ -200,7 +200,7 @@ pre.code .fn { color: #82aaff; } pre.code .st { color: #c3e88d; } pre.code .nb {
 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.2rem 0; }
 @media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
 .col { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; box-shadow: var(--shadow); min-width: 0; }
-.col h4 { margin: 0 0 .4rem; font-size: .95rem; }
+.col h3 { margin: 0 0 .4rem; font-size: .95rem; }
 
 table.t { width: 100%; border-collapse: collapse; margin: 1.1rem 0; font-size: .9rem;
   background: var(--panel); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
@@ -268,7 +268,7 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
 .pdf-btn:hover { background:var(--accent-ink); transform:translateY(-1px); }
 </style>
 </head><body>
-<div class="topbar">
+<header class="topbar">
   <div class="topbar-inner">
     <span class="home">📘 <span class="zh">GenericAgent 图解教程</span><span class="en">GenericAgent Visual Guide</span></span>
     <span class="pill"><span class="zh">共 23 课 · 6 个部分</span><span class="en">23 lessons · 6 parts</span></span>
@@ -276,8 +276,8 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
     <button class="lang-btn" id="langbtn" type="button" aria-label="切换语言 / Toggle language">EN</button>
   </div>
   <div class="progress"><span style="width:100%"></span></div>
-</div>
-<div class="wrap">
+</header>
+<main class="wrap">
   <div class="hero index">
     <div class="part"><span class="zh">从零开始 · 面向完全新手</span><span class="en">From scratch · for total beginners</span></div>
     <h1><span class="zh">用图解理解整个 GenericAgent</span><span class="en">Understand all of GenericAgent, visually</span></h1>
@@ -298,7 +298,7 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
     <input id="q" type="search" data-ph-zh="🔎 搜索课程：标题 / 关键词" data-ph-en="🔎 Search lessons: title / keyword" placeholder="🔎 搜索课程：标题 / 关键词" autocomplete="off" aria-label="搜索课程 / Search lessons">
     <span class="qcount" id="qcount"></span>
   </div>
-  <div class="toc"><div class="toc-part"><span class="zh">第一部分 · 宏观全景</span><span class="en">Part 1 · The Big Picture</span></div>
+  <nav class="toc" aria-label="课程目录 / Lesson contents"><div class="toc-part"><span class="zh">第一部分 · 宏观全景</span><span class="en">Part 1 · The Big Picture</span></div>
 <a href="lessons/01-what-is-ga.html"><span class="n">01</span><span class="tt"><span class="zh">GenericAgent 是什么</span><span class="en">What is GenericAgent</span></span><span class="ts"><span class="zh">解决什么问题 · 核心心智模型</span><span class="en">What it solves · core mental model</span></span></a>
 <a href="lessons/02-project-map.html"><span class="n">02</span><span class="tt"><span class="zh">项目全景地图</span><span class="en">Project Map</span></span><span class="ts"><span class="zh">目录结构 · 模块职责一图看懂</span><span class="en">Directory layout · module responsibilities</span></span></a>
 <a href="lessons/03-task-lifecycle.html"><span class="n">03</span><span class="tt"><span class="zh">一次任务的生命周期</span><span class="en">Lifecycle of a Task</span></span><span class="ts"><span class="zh">从一句指令到结果的完整数据流</span><span class="en">From prompt to result, end to end</span></span></a>
@@ -326,9 +326,9 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
 <a href="lessons/21-build-a-skill.html"><span class="n">21</span><span class="tt"><span class="zh">端到端实战：造一个新技能</span><span class="en">End-to-End: Build a Skill</span></span><span class="ts"><span class="zh">从零造一个新技能的全过程</span><span class="en">Build a brand-new skill from scratch</span></span></a>
 <a href="lessons/22-extend-frontend.html"><span class="n">22</span><span class="tt"><span class="zh">扩展前端 / 接入新 IM</span><span class="en">Extending Frontends</span></span><span class="ts"><span class="zh">接入新 IM / 自定义前端</span><span class="en">Add a new IM / custom front-end</span></span></a>
 <div class="toc-part"><span class="zh">第六部分 · 速查</span><span class="en">Part 6 · Reference</span></div>
-<a href="lessons/23-glossary.html"><span class="n">23</span><span class="tt"><span class="zh">术语表 + 源文件索引</span><span class="en">Glossary & Source Index</span></span><span class="ts"><span class="zh">术语一句话查 + 源文件索引</span><span class="en">One-line glossary + source index</span></span></a></div>
+<a href="lessons/23-glossary.html"><span class="n">23</span><span class="tt"><span class="zh">术语表 + 源文件索引</span><span class="en">Glossary & Source Index</span></span><span class="ts"><span class="zh">术语一句话查 + 源文件索引</span><span class="en">One-line glossary + source index</span></span></a></nav>
   <div class="toc-empty" id="tocempty"><span class="zh">没有匹配的课程，换个关键词试试。</span><span class="en">No matching lessons — try another keyword.</span></div>
-</div>
+</main>
 <script>
 (function(){
   function cur(){ return (localStorage.getItem('galang')||'zh'); }

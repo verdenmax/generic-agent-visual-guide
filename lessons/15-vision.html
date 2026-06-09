@@ -18,7 +18,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg: #f6f7f9; --panel: #ffffff; --panel-2: #f0f2f5; --ink: #1d2129;
-  --muted: #5b6470; --faint: #8a939f; --line: #e1e5ea;
+  --muted: #5b6470; --faint: #646b74; --line: #e1e5ea;
   --accent: #5b4ddb; --accent-soft: #ece9fc; --accent-ink: #3a2ea3;
   --blue: #2563eb; --blue-soft: #e7efff; --amber: #b4690e; --amber-soft: #fdf1dd;
   --purple: #7c3aed; --purple-soft: #f0e9ff; --red: #d23f3f; --red-soft: #fbe6e6;
@@ -29,7 +29,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0e1116; --panel: #161b22; --panel-2: #1c232c; --ink: #e6edf3;
-    --muted: #9aa6b2; --faint: #6e7a86; --line: #2a323c;
+    --muted: #9aa6b2; --faint: #8a96a3; --line: #2a323c;
     --accent: #9d8df3; --accent-soft: #211b46; --accent-ink: #c9c0f8;
     --blue: #6ea8fe; --blue-soft: #16243f; --amber: #e0a44a; --amber-soft: #33270f;
     --purple: #b794f6; --purple-soft: #271a40; --red: #f08080; --red-soft: #3a1a1a;
@@ -179,7 +179,7 @@ pre.code .fn { color: #82aaff; } pre.code .st { color: #c3e88d; } pre.code .nb {
   width: 2px; background: var(--line); }
 .vflow .num { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #fff;
   display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .85rem; flex-shrink: 0; z-index:1; }
-.vflow .sc h4 { margin: .25rem 0 .2rem; font-size: 1rem; }
+.vflow .sc h3 { margin: .25rem 0 .2rem; font-size: 1rem; }
 .vflow .sc p { margin: .15rem 0; font-size: .92rem; color: var(--muted); }
 .vflow .sc .mono { font-size: .8rem; color: var(--accent-ink); }
 
@@ -200,7 +200,7 @@ pre.code .fn { color: #82aaff; } pre.code .st { color: #c3e88d; } pre.code .nb {
 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.2rem 0; }
 @media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
 .col { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; box-shadow: var(--shadow); min-width: 0; }
-.col h4 { margin: 0 0 .4rem; font-size: .95rem; }
+.col h3 { margin: 0 0 .4rem; font-size: .95rem; }
 
 table.t { width: 100%; border-collapse: collapse; margin: 1.1rem 0; font-size: .9rem;
   background: var(--panel); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
@@ -268,7 +268,7 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
 .pdf-btn:hover { background:var(--accent-ink); transform:translateY(-1px); }
 </style>
 </head><body>
-<div class="topbar">
+<header class="topbar">
   <div class="topbar-inner">
     <a class="home" href="../index.html">📘 <span class="zh">GenericAgent 图解教程</span><span class="en">GenericAgent Visual Guide</span> · <b><span class="zh">目录</span><span class="en">Contents</span></b></a>
     <span class="pill"><span class="zh">第四部分 · 进阶能力</span><span class="en">Part 4 · Advanced Capabilities</span></span>
@@ -277,8 +277,8 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
     <button class="lang-btn" id="langbtn" type="button" aria-label="切换语言 / Toggle language">EN</button>
   </div>
   <div class="progress"><span style="width:65%"></span></div>
-</div>
-<div class="wrap">
+</header>
+<main class="wrap">
   <div class="hero">
     <div class="part"><span class="zh">第四部分 · 进阶能力</span><span class="en">Part 4 · Advanced Capabilities</span></div>
     <h1><span class="zh">计算机控制 · 视觉</span><span class="en">Computer Control · Vision</span></h1>
@@ -296,8 +296,8 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
   <span class="st">'label'</span>: <span class="nb">str</span> | <span class="nb">None</span>,  <span class="cm"># None when an icon carries no text</span>
   <span class="st">'confidence'</span>: <span class="nb">float</span>
 }</pre></div></div></div><div class="qa"><div class="q">How match mode works</div><div class="a"><p>The default <span class="inline">mode='match'</span> runs YOLO once for icon boxes, then a single <strong>full-image OCR</strong>, and uses <span class="inline">_iou()</span> (intersection over the OCR box's area) to "stick" text onto the overlapping icon as its label; any OCR box matched by no icon is emitted on its own as a <span class="mono">type='text'</span> element. ~1.2s.</p></div></div><div class="qa"><div class="q">match vs crop</div><div class="a"><p><span class="inline">mode='crop'</span> instead crops every YOLO box and <strong>stitches them vertically into one tall image</strong> (<span class="inline">_ocr_crops_batch</span>), OCRs once, and maps results back by y-coordinate — more precise but ~2.3s. Use match day-to-day; switch to crop only when dense small icons are misread.</p></div></div></div></details><details class="accordion"><summary><span class="badge-num">2</span> Three OCR pitfalls: ocr_utils.py <span class="hint">click to expand</span></summary><div class="acc-body"><div class="qa"><div class="q">conf and "no text"</div><div class="a"><p>RapidOCR has two counter-intuitive points, documented in the header of <span class="inline">ocr_utils.py</span>: <strong>(1) confidence is a string</strong> (<span class="mono">result[i][2]</span> is str, not float, so <span class="inline">_ocr_rapid</span> must cast it via <span class="mono">float(r[2])</span>); <strong>(2) it returns None, not an empty list, when there is no text</strong>, so you must guard with <span class="mono">if not result</span> first.</p></div></div><div class="qa"><div class="q">Remote-desktop black screen</div><div class="a"><p>After an RDP disconnect, <span class="inline">ImageGrab</span> / mss capture a <strong>fully black image</strong>. The fix is <span class="inline">ocr_window(hwnd)</span>: it grabs the window bitmap directly through Win32's <span class="inline">PrintWindow</span> API, bypassing the screen buffer so it still works under remote desktop.</p></div></div><div class="qa"><div class="q">Three entry points</div><div class="a"><p><span class="inline">ocr_image(img)</span> reads one image, <span class="inline">ocr_screen(bbox)</span> grabs a screen region then reads, and <span class="inline">ocr_window(hwnd)</span> grabs a window then reads; all three return <span class="mono">{text, lines, details}</span>, with bbox and conf inside details.</p></div></div></div></details><details class="accordion"><summary><span class="badge-num">3</span> Iconless elements: physical coordinates and the VLM fallback <span class="hint">click to expand</span></summary><div class="acc-body"><div class="qa"><div class="q">Elements with label=None</div><div class="a"><p>A pure icon (a gear, an arrow) has no text, so <span class="inline">detect()</span> gives it <span class="mono">label=None</span>. You then cannot locate it by text, so crop that bbox and hand it to a <strong>vision LLM</strong> for its meaning — the fallback entry is <span class="inline">memory/vision_api.template.py: ask_vision(img, prompt)</span>, which supports claude / openai / modelscope backends.</p></div></div><div class="qa"><div class="q">Why physical coordinates are mandatory</div><div class="a"><p>On high-DPI screens, "logical coordinates" and "physical pixels" are not the same. Screenshot analysis yields <strong>physical-pixel</strong> boxes, and the next lesson's clicking via <span class="inline">ljqCtrl</span> also reckons in physical coordinates (multiplying by dpi_scale internally) — only when both ends agree does "what you see" line up with "what you click". That is why <span class="inline">ui_detect.py</span> prints "after screenshot analysis you must use physical coordinates" the moment it loads.</p></div></div><div class="qa"><div class="q">YOLO cross-process cache</div><div class="a"><p>Loading YOLO weights is slow, so <span class="inline">_yolo()</span> outsources inference to a resident daemon: it pings <span class="mono">127.0.0.1:31876</span>, and if nothing answers it Popens itself with <span class="mono">--yolo-daemon</span>, after which each detection reuses the already-loaded model over HTTP; if the daemon is unavailable it falls back to local inference via <span class="inline">_yolo_local</span>.</p></div></div></div></details><div class="card analogy"><div class="tag">🧩 Analogy</div>Like giving the agent a pair of <strong>eyes</strong> plus a <strong>pointing finger</strong>: it glances at the screen, recognizes "that blue Send button is at the bottom-right", and lands its finger precisely on that pixel. Even if the software offers no API for programs at all, it can still use it.</div><div class="card key"><div class="tag">✅ Key Takeaways</div><ul><li>Vision pipeline: capture → detect (YOLO+OCR) → locate → act.</li><li>detect() returns elements with coordinates; iconless elements can fall back to a VLM.</li><li>Always use physical coordinates; use ocr_window under remote desktop to avoid black screens.</li></ul></div><div class="card spark"><div class="tag">💡 Design Insight</div>Vision is GA's "<strong>universal fallback</strong>": when APIs and HTML both fail, as long as the screen shows something, it can operate. This extends the controllable scope from "software with an API" to "<strong>any interface a human eye can use</strong>" — which is exactly why GA need not preload an adapter for every app. If it can see it, that is enough.</div></div>
-  <div class="footnav"><a class="prev" href="14-context-tokens.html"><div class="dir"><span class="zh">← 上一课</span><span class="en">← Prev</span></div><div class="ttl"><span class="zh">上下文工程与 Token 效率</span><span class="en">Context Engineering & Token Efficiency</span></div></a><a class="next" href="16-input-mobile.html"><div class="dir"><span class="zh">下一课 →</span><span class="en">Next →</span></div><div class="ttl"><span class="zh">输入与移动端</span><span class="en">Input & Mobile (ADB)</span></div></a></div>
-</div>
+  <nav class="footnav" aria-label="课程导航 / Lesson navigation"><a class="prev" href="14-context-tokens.html"><div class="dir"><span class="zh">← 上一课</span><span class="en">← Prev</span></div><div class="ttl"><span class="zh">上下文工程与 Token 效率</span><span class="en">Context Engineering & Token Efficiency</span></div></a><a class="next" href="16-input-mobile.html"><div class="dir"><span class="zh">下一课 →</span><span class="en">Next →</span></div><div class="ttl"><span class="zh">输入与移动端</span><span class="en">Input & Mobile (ADB)</span></div></a></nav>
+</main>
 <script>
 (function(){
   function cur(){ return (localStorage.getItem('galang')||'zh'); }

@@ -46,27 +46,27 @@ def lesson_08(t):
 
         + '<h2>' + t('一轮里发生了什么', 'What happens in one turn') + '</h2>'
         + '<div class="vflow">'
-        + '<div class="step"><div class="num">1</div><div class="sc"><h4>'
-        + t('调用模型', 'Call the model') + '</h4><p>'
+        + '<div class="step"><div class="num">1</div><div class="sc"><h3>'
+        + t('调用模型', 'Call the model') + '</h3><p>'
         + t('把当前 messages 与工具 schema 交给 ', 'Hand the current messages and tools schema to ')
         + '<span class="mono">client.chat(messages, tools)</span>'
         + t('，流式拿到回复。', ' and stream back the reply.') + '</p></div></div>'
-        + '<div class="step"><div class="num">2</div><div class="sc"><h4>'
-        + t('解析工具调用', 'Parse tool calls') + '</h4><p>'
+        + '<div class="step"><div class="num">2</div><div class="sc"><h3>'
+        + t('解析工具调用', 'Parse tool calls') + '</h3><p>'
         + t('从 ', 'Read ') + '<span class="mono">response.tool_calls</span>'
         + t(' 读出模型想调用的工具与参数；一轮可含多个工具。',
             ' for the tools and arguments the model wants; a turn may contain several.') + '</p></div></div>'
-        + '<div class="step"><div class="num">3</div><div class="sc"><h4>'
-        + t('逐个执行', 'Run them one by one') + '</h4><p>'
+        + '<div class="step"><div class="num">3</div><div class="sc"><h3>'
+        + t('逐个执行', 'Run them one by one') + '</h3><p>'
         + t('对每个工具调用 ', 'For each call, invoke ') + '<span class="mono">handler.dispatch(...)</span>'
         + t('，得到一个 ', ', yielding a ') + '<span class="mono">StepOutcome</span>'
         + t('。', '.') + '</p></div></div>'
-        + '<div class="step"><div class="num">4</div><div class="sc"><h4>'
-        + t('决定下一步', 'Decide what is next') + '</h4><p>'
+        + '<div class="step"><div class="num">4</div><div class="sc"><h3>'
+        + t('决定下一步', 'Decide what is next') + '</h3><p>'
         + t('收集各工具的 next_prompt 与结果；若有工具要求退出或没有 next_prompt，则结束。',
             'Collect each tool\'s next_prompt and results; if a tool asks to exit, or there is no next_prompt, finish.') + '</p></div></div>'
-        + '<div class="step"><div class="num">5</div><div class="sc"><h4>'
-        + t('组织下一轮消息', 'Build next-turn messages') + '</h4><p>'
+        + '<div class="step"><div class="num">5</div><div class="sc"><h3>'
+        + t('组织下一轮消息', 'Build next-turn messages') + '</h3><p>'
         + t('只把“这一轮的新消息 + 工具结果”作为下一轮输入，历史由 Session 保存。',
             'Pass only "this turn\'s new message + tool results" as the next input; history is kept by the Session.') + '</p></div></div>'
         + '</div>'
@@ -290,12 +290,12 @@ def lesson_09(t):
 
         + '<h2>' + t('两种工具协议', 'Two tool protocols') + '</h2>'
         + '<div class="cols">'
-        + '<div class="col"><h4>' + t('原生函数调用', 'Native function calling') + '</h4><p>'
+        + '<div class="col"><h3>' + t('原生函数调用', 'Native function calling') + '</h3><p>'
         + t('把工具 schema 交给支持 function-calling 的模型 API，直接拿回结构化的 tool_calls。实现见 ',
             'Hand the tools schema to a model API that supports function calling and get structured tool_calls '
             'back directly. See ')
         + '<span class="inline">NativeToolClient</span>' + t('。', '.') + '</p></div>'
-        + '<div class="col"><h4>' + t('纯文本协议', 'Plain-text protocol') + '</h4><p>'
+        + '<div class="col"><h3>' + t('纯文本协议', 'Plain-text protocol') + '</h3><p>'
         + t('对不支持函数调用的模型，先把工具说明拼进提示词，再从模型的文本回复里把工具调用解析出来。实现见 ',
             'For models without function calling, weave the tool instructions into the prompt, then parse tool '
             'calls out of the model\'s text reply. See ')

@@ -131,7 +131,7 @@ CSS = r"""
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg: #f6f7f9; --panel: #ffffff; --panel-2: #f0f2f5; --ink: #1d2129;
-  --muted: #5b6470; --faint: #8a939f; --line: #e1e5ea;
+  --muted: #5b6470; --faint: #646b74; --line: #e1e5ea;
   --accent: #5b4ddb; --accent-soft: #ece9fc; --accent-ink: #3a2ea3;
   --blue: #2563eb; --blue-soft: #e7efff; --amber: #b4690e; --amber-soft: #fdf1dd;
   --purple: #7c3aed; --purple-soft: #f0e9ff; --red: #d23f3f; --red-soft: #fbe6e6;
@@ -142,7 +142,7 @@ CSS = r"""
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0e1116; --panel: #161b22; --panel-2: #1c232c; --ink: #e6edf3;
-    --muted: #9aa6b2; --faint: #6e7a86; --line: #2a323c;
+    --muted: #9aa6b2; --faint: #8a96a3; --line: #2a323c;
     --accent: #9d8df3; --accent-soft: #211b46; --accent-ink: #c9c0f8;
     --blue: #6ea8fe; --blue-soft: #16243f; --amber: #e0a44a; --amber-soft: #33270f;
     --purple: #b794f6; --purple-soft: #271a40; --red: #f08080; --red-soft: #3a1a1a;
@@ -292,7 +292,7 @@ pre.code .fn { color: #82aaff; } pre.code .st { color: #c3e88d; } pre.code .nb {
   width: 2px; background: var(--line); }
 .vflow .num { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #fff;
   display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .85rem; flex-shrink: 0; z-index:1; }
-.vflow .sc h4 { margin: .25rem 0 .2rem; font-size: 1rem; }
+.vflow .sc h3 { margin: .25rem 0 .2rem; font-size: 1rem; }
 .vflow .sc p { margin: .15rem 0; font-size: .92rem; color: var(--muted); }
 .vflow .sc .mono { font-size: .8rem; color: var(--accent-ink); }
 
@@ -313,7 +313,7 @@ pre.code .fn { color: #82aaff; } pre.code .st { color: #c3e88d; } pre.code .nb {
 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.2rem 0; }
 @media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
 .col { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; box-shadow: var(--shadow); min-width: 0; }
-.col h4 { margin: 0 0 .4rem; font-size: .95rem; }
+.col h3 { margin: 0 0 .4rem; font-size: .95rem; }
 
 table.t { width: 100%; border-collapse: collapse; margin: 1.1rem 0; font-size: .9rem;
   background: var(--panel); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
@@ -502,7 +502,7 @@ def page(fname, content, home_href="../index.html"):
 {meta}
 <style>{CSS}</style>
 </head><body>
-<div class="topbar">
+<header class="topbar">
   <div class="topbar-inner">
     <a class="home" href="{home_href}">📘 {SITE_NAME} · <b>{bi("目录", "Contents")}</b></a>
     <span class="pill">{part_bi}</span>
@@ -511,15 +511,15 @@ def page(fname, content, home_href="../index.html"):
     {_lang_button()}
   </div>
   <div class="progress"><span style="width:{pct}%"></span></div>
-</div>
-<div class="wrap">
+</header>
+<main class="wrap">
   <div class="hero">
     <div class="part">{part_bi}</div>
     <h1>{title_bi}</h1>
   </div>
   {content}
-  <div class="footnav">{prev_link}{next_link}</div>
-</div>
+  <nav class="footnav" aria-label="课程导航 / Lesson navigation">{prev_link}{next_link}</nav>
+</main>
 <script>{LANG_JS}</script>
 </body></html>"""
 
@@ -580,7 +580,7 @@ def index_page(lesson_prefix="lessons/"):
 {meta}
 <style>{CSS}</style>
 </head><body>
-<div class="topbar">
+<header class="topbar">
   <div class="topbar-inner">
     <span class="home">📘 {SITE_NAME}</span>
     <span class="pill">{bi(f"共 {len(PAGES)} 课 · {len(order)} 个部分", f"{len(PAGES)} lessons · {len(order)} parts")}</span>
@@ -588,8 +588,8 @@ def index_page(lesson_prefix="lessons/"):
     {_lang_button()}
   </div>
   <div class="progress"><span style="width:100%"></span></div>
-</div>
-<div class="wrap">
+</header>
+<main class="wrap">
   <div class="hero index">
     <div class="part">{bi("从零开始 · 面向完全新手", "From scratch · for total beginners")}</div>
     <h1>{bi("用图解理解整个 GenericAgent", "Understand all of GenericAgent, visually")}</h1>
@@ -610,9 +610,9 @@ def index_page(lesson_prefix="lessons/"):
     <input id="q" type="search" data-ph-zh="🔎 搜索课程：标题 / 关键词" data-ph-en="🔎 Search lessons: title / keyword" placeholder="🔎 搜索课程：标题 / 关键词" autocomplete="off" aria-label="搜索课程 / Search lessons">
     <span class="qcount" id="qcount"></span>
   </div>
-  <div class="toc">{toc}</div>
+  <nav class="toc" aria-label="课程目录 / Lesson contents">{toc}</nav>
   <div class="toc-empty" id="tocempty">{bi("没有匹配的课程，换个关键词试试。", "No matching lessons — try another keyword.")}</div>
-</div>
+</main>
 <script>{LANG_JS}</script>
 <script>{SEARCH_JS}</script>
 </body></html>"""
