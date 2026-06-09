@@ -761,6 +761,26 @@ def lesson_07(t):
         + t(' 候选项。', ' candidate options.') + '</li>'
         + '</ul></div>'
 
+        + '<div class="card detail"><div class="tag">🔬 '
+        + t('源码：九个工具如何被“派发”', 'In the Source: how the nine tools are dispatched') + '</div>'
+        + '<p>' + t(
+            '模型每轮输出工具名，<span class="inline">agent_loop.py: BaseHandler.dispatch</span> 据此拼出 '
+            '<span class="inline">do_&lt;tool&gt;</span> 方法名并直接调用——“九个工具”其实就是九个 do_ 方法，'
+            '没有插件系统、没有中间层。这就是“极简”与“强执行力”在源码层的交汇点。',
+            'Each turn the model emits a tool name; <span class="inline">agent_loop.py: BaseHandler.dispatch</span> '
+            'builds the <span class="inline">do_&lt;tool&gt;</span> method name and calls it directly — the "nine tools" '
+            'are literally nine do_ methods, with no plugin system and no middle layer. This is where "minimal" and '
+            '"strong execution" meet in the source.') + '</p>'
+        + c.codefile('agent_loop.py', 'BaseHandler.dispatch',
+            '<span class="kw">def</span> <span class="fn">dispatch</span>(self, tool_name, args, response, index=<span class="nb">0</span>, tool_num=<span class="nb">1</span>):\n'
+            '    method_name = <span class="st">f"do_{tool_name}"</span>\n'
+            '    <span class="kw">if</span> hasattr(self, method_name):\n'
+            '        args[<span class="st">\'_index\'</span>] = index; args[<span class="st">\'_tool_num\'</span>] = tool_num\n'
+            '        ret = <span class="kw">yield from</span> <span class="fn">try_call_generator</span>(<span class="fn">getattr</span>(self, method_name), args, response)\n'
+            '        <span class="kw">return</span> ret\n'
+            '    <span class="cm"># ' + t('未知工具 → 回一句提示给模型', 'unknown tool → return a hint to the model') + '</span>')
+        + '</div>'
+
         + c.deepdive_heading(t)
         + c.accordion(t, 1, 'code_run：九个工具里的“元工具”',
             'code_run: the "meta-tool" among the nine',
@@ -789,7 +809,15 @@ def lesson_07(t):
                        '<span class="mono">timeout=60</span>, type python. Output is capped at '
                        '<span class="mono">maxlen = 10000 // _tool_num</span> (split across this turn\'s tools), '
                        'which is why the schema stresses "No hardcoding bulk data" — read bulk data from files, do '
-                       'not stuff it into code.') + '</p>')
+                       'not stuff it into code.') + '</p>'
+                   + c.codefile('ga.py', 'do_code_run',
+                       '<span class="kw">def</span> <span class="fn">do_code_run</span>(self, args, response):\n'
+                       '    code = args.get(<span class="st">"code"</span>) <span class="kw">or</span> args.get(<span class="st">"script"</span>)\n'
+                       '    <span class="kw">if</span> <span class="kw">not</span> code:                                  <span class="cm"># ' + t('没传 → 从回复代码块里抠', 'none given → extract from the reply code block') + '</span>\n'
+                       '        code = self.<span class="fn">_extract_code_block</span>(response, code_type)\n'
+                       '    timeout = int(args.get(<span class="st">"timeout"</span>, <span class="nb">60</span>))\n'
+                       '    maxlen  = <span class="nb">10000</span> // args.get(<span class="st">\'_tool_num\'</span>, <span class="nb">1</span>)   <span class="cm"># ' + t('输出预算按本轮工具数均分', 'output budget split across this turn\'s tools') + '</span>\n'
+                       '    ...'))
             + c.qa(t, '❓ 为什么它是“元工具”', 'Why it is the "meta-tool"',
                    '<p>' + t(
                        '因为它能执行<strong>任意代码</strong>：运行时装包、调外部 API、写新脚本，'

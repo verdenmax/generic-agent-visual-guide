@@ -371,7 +371,25 @@ def lesson_21(t):
                        '等于把没跑通的脚本当成技能存进去，下次召回反而误事。',
                        '"No action, no memory": the script must <strong>actually run and read out messages</strong> '
                        'before step ④ may crystallize. Skipping verification and saving anyway stores an unproven script '
-                       'as a skill — which then misfires on recall.') + '</p>'))
+                       'as a skill — which then misfires on recall.') + '</p>')
+            + c.qa(t, '🧪 一个技能落地后长什么样', 'What a crystallized skill actually looks like',
+                 c.codefile('assets/global_mem_insight_template.txt', 'L1 ' + t('索引：每条技能一格', 'index: one cell per skill'),
+                     'L0(META-SOP): memory_management_sop\n'
+                     'L3: memory_cleanup_sop(' + t('记忆整理', 'memory cleanup') + ') | skill_search | ui_detect.py | web_setup_sop\n'
+                     '  | autonomous_operation_sop | scheduled_task_sop | vision_sop | adb_ui.py | ...\n'
+                     'L4: L4_raw_sessions/ ' + t('历史会话', 'archived sessions'))
+                 + c.codefile('memory/memory_cleanup_sop.md', t('一个技能 = 一个 *_sop.md', 'a skill = one *_sop.md'),
+                     '# ' + t('记忆整理 SOP', 'Memory-cleanup SOP') + '\n'
+                     '## ' + t('核心原则：存在性编码', 'Core principle: existence encoding') + '\n'
+                     + t('LLM 自身是压缩器+解码器。L1 只需让它意识到“某类知识存在”，', 'The LLM itself is compressor + decoder. L1 only needs to make it aware "some knowledge exists",') + '\n'
+                     + t('它就能通过 tool call 自行取用深层内容。', 'and it fetches the deep content itself via a tool call.'))
+                 + '<p>' + t(
+                     '所以“造一个技能”落到磁盘上，就是这两样东西：<strong>L3 多一个 <span class="inline">*_sop.md</span></strong> 文件，'
+                     '<strong>L1 索引多一格指针</strong>。没有数据库、没有注册表——召回时 skill_search 命中 L1 那一格，再顺指针打开 L3 全文。',
+                     'So "building a skill" on disk is exactly these two things: <strong>one more '
+                     '<span class="inline">*_sop.md</span> in L3</strong> and <strong>one more pointer cell in the L1 '
+                     'index</strong>. No database, no registry — on recall, skill_search hits that L1 cell, then follows '
+                     'the pointer to open the full L3 text.') + '</p>'))
         + c.accordion(t, 2, '之后每次：一句话是怎么被召回的',
             'Every time after: how one sentence gets recalled',
             c.qa(t, '⚙️ 召回路径', 'The recall path',

@@ -436,19 +436,12 @@ def lesson_17(t):
         )
         + '</p></div>'
 
-        + '<div class="codefile"><div class="cf-head"><span class="dot"></span>'
-        + '<span class="path">ga.py</span><span class="ln">web tools → simphtml</span></div>'
-        + '<pre>'
-        + '<span class="kw">import</span> simphtml\n'
-        + '<span class="kw">from</span> TMWebDriver <span class="kw">import</span> TMWebDriver\n'
-        + 'driver = TMWebDriver()  <span class="cm"># ' + t('连真实浏览器的 WS 桥', 'WS bridge to the real browser') + '</span>\n'
-        + '\n'
-        + '<span class="cm"># web_scan ' + t('看页面', 'look at the page') + '</span>\n'
-        + 'content = simphtml.get_html(driver, cutlist=<span class="nb">True</span>, maxchars=<span class="nb">35000</span>)\n'
-        + '\n'
-        + '<span class="cm"># web_execute_js ' + t('操作页面', 'act on the page') + '</span>\n'
-        + 'result = simphtml.execute_js_rich(script, driver)\n'
-        + '</pre></div>'
+        + c.codefile('ga.py', 'web_execute_js',
+            '<span class="kw">def</span> <span class="fn">web_execute_js</span>(script, switch_tab_id=<span class="nb">None</span>, no_monitor=<span class="nb">False</span>):\n'
+            '    <span class="kw">global</span> driver\n'
+            '    <span class="kw">if</span> driver <span class="kw">is</span> <span class="nb">None</span>: <span class="fn">first_init_driver</span>()            <span class="cm"># ' + t('懒连接你的真实浏览器', 'lazily attach to your real browser') + '</span>\n'
+            '    <span class="kw">if</span> switch_tab_id: driver.default_session_id = switch_tab_id\n'
+            '    <span class="kw">return</span> simphtml.<span class="fn">execute_js_rich</span>(script, driver, no_monitor=no_monitor)')
 
         + '<div class="card detail"><div class="tag">🔬 '
         + t('源码对应', 'In the Source') + '</div>'
@@ -569,7 +562,18 @@ def lesson_17(t):
                        '<span class="mono">simphtml.execute_js_rich(script, driver)</span>, wrapped as the tool methods '
                        '<span class="inline">do_web_scan / do_web_execute_js</span>. The guidance is to <strong>prefer '
                        'execute_js and scan sparingly</strong> — scan is expensive, targeted JS is both precise and '
-                       'cheap.') + '</p>'))
+                       'cheap.') + '</p>'
+                   + c.codefile('simphtml.py / TMWebDriver.py', 'execute_js_rich → driver.execute_js',
+                       '<span class="cm"># simphtml.py</span>\n'
+                       '<span class="kw">def</span> <span class="fn">execute_js_rich</span>(script, driver, no_monitor=<span class="nb">False</span>):\n'
+                       '    response = driver.<span class="fn">execute_js</span>(script)              <span class="cm"># ' + t('下发到真实浏览器标签页', 'ship to the real browser tab') + '</span>\n'
+                       '    result = response.get(<span class="st">\'data\'</span>) <span class="kw">or</span> response.get(<span class="st">\'result\'</span>)\n'
+                       '    ...                                            <span class="cm"># ' + t('再附 newTabs / transients / diff', 'plus newTabs / transients / diff') + '</span>\n'
+                       '\n'
+                       '<span class="cm"># TMWebDriver.py</span>\n'
+                       '<span class="kw">def</span> <span class="fn">execute_js</span>(self, code, timeout=<span class="nb">15</span>, session_id=<span class="nb">None</span>):\n'
+                       '    <span class="kw">if</span> session_id <span class="kw">is</span> <span class="nb">None</span>: session_id = self.default_session_id\n'
+                       '    ...                                            <span class="cm"># ' + t('通过 WS/HTTP 把 code 送进对应 tab 执行', 'send code into that tab over WS/HTTP') + '</span>')))
 
         + '<div class="card analogy"><div class="tag">🧩 '
         + t('生活类比', 'Analogy') + '</div>'

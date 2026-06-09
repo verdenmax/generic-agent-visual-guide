@@ -372,6 +372,19 @@ def lesson_09(t):
                  + '<tr><td class="mono">LLMSession</td><td>' + t('OpenAI 兼容（chat_completions / responses）', 'OpenAI-compatible (chat_completions / responses)') + '</td></tr>'
                  + '<tr><td class="mono">NativeClaudeSession</td><td>' + t('伪装 Claude Code CLI 的原生端点（claude-cli UA + beta headers）', 'native Claude Code CLI endpoint (claude-cli UA + beta headers)') + '</td></tr>'
                  + '<tr><td class="mono">NativeOAISession</td><td>' + t('继承 NativeClaudeSession，但走 OpenAI 流', 'subclasses NativeClaudeSession but uses the OpenAI stream') + '</td></tr></table>')
+            + c.qa(t, '🧪 按配置名选后端：resolve_session / resolve_client', 'Pick a backend by config name: resolve_session / resolve_client',
+                 c.codefile('llmcore.py', 'resolve_session / resolve_client',
+                    '<span class="kw">def</span> <span class="fn">resolve_session</span>(cfg_name):\n'
+                    '    cfg = <span class="fn">reload_mykeys</span>()[<span class="nb">0</span>].get(cfg_name)\n'
+                    '    <span class="kw">if</span> <span class="st">\'native\'</span> <span class="kw">in</span> cfg_name: <span class="kw">return</span> (NativeClaudeSession <span class="kw">if</span> <span class="st">\'claude\'</span> <span class="kw">in</span> cfg_name <span class="kw">else</span> NativeOAISession)(cfg=cfg)\n'
+                    '    <span class="kw">if</span> <span class="st">\'claude\'</span> <span class="kw">in</span> cfg_name: <span class="kw">return</span> <span class="fn">ClaudeSession</span>(cfg=cfg)\n'
+                    '    <span class="kw">return</span> <span class="fn">LLMSession</span>(cfg=cfg) <span class="kw">if</span> <span class="st">\'oai\'</span> <span class="kw">in</span> cfg_name <span class="kw">else</span> <span class="nb">None</span>\n'
+                    '<span class="kw">def</span> <span class="fn">resolve_client</span>(cfg_name):                 <span class="cm"># ' + t('再包成 ToolClient / NativeToolClient', 'then wrap as ToolClient / NativeToolClient') + '</span>\n'
+                    '    ...')
+                 + c.codefile('llmcore.py', '_openai_stream',
+                    '<span class="cm"># ' + t('各家小脾气：Kimi / MiniMax 的温度特判', 'per-provider quirks: Kimi / MiniMax temperature') + '</span>\n'
+                    '<span class="kw">if</span> <span class="st">\'kimi\'</span> <span class="kw">in</span> ml <span class="kw">or</span> <span class="st">\'moonshot\'</span> <span class="kw">in</span> ml: temperature = <span class="nb">1</span>\n'
+                    '<span class="kw">elif</span> <span class="st">\'minimax\'</span> <span class="kw">in</span> ml: temperature = max(<span class="nb">0.01</span>, min(temperature, <span class="nb">1.0</span>))  <span class="cm"># MiniMax temp &isin; (0,1]</span>'))
             + c.qa(t, '🧪 MixinSession 多后端兜底', 'MixinSession multi-backend fallback',
                  c.codefile('llmcore.py', 'MixinSession._raw_ask',
                      '<span class="kw">def</span> <span class="fn">_raw_ask</span>(self, *args, **kwargs):\n'
@@ -1405,7 +1418,11 @@ def lesson_14(t):
                        'compression — they are the "tidy-terminal" art.') + '</p>'))
         + c.accordion(t, 3, '历史侧才是真省 token：compress_history_tags / trim_messages_history',
             'The real token saver is history-side: compress_history_tags / trim_messages_history',
-            c.qa(t, '🧪 周期压缩旧消息', 'Periodically compress older messages',
+            c.qa(t, '🧪 每轮只把“新消息”带入', 'Each turn carries only the "new message"',
+                 c.codefile('agent_loop.py', 'agent_runner_loop',
+                     '<span class="cm"># ' + t('历史留在 *Session 里，messages 每轮只放这一轮的新内容', 'history lives in *Session; messages holds only this turn') + '</span>\n'
+                     'messages = [{<span class="st">\'role\'</span>: <span class="st">\'user\'</span>, <span class="st">\'content\'</span>: next_prompt, <span class="st">\'tool_results\'</span>: tool_results}]'))
+            + c.qa(t, '🧪 周期压缩旧消息', 'Periodically compress older messages',
                  c.codefile('llmcore.py', 'compress_history_tags',
                      '<span class="kw">def</span> <span class="fn">compress_history_tags</span>(messages, keep_recent=<span class="nb">10</span>, max_len=<span class="nb">800</span>, force=<span class="nb">False</span>, interval=<span class="nb">5</span>):\n'
                      '    <span class="kw">if</span> compress_history_tags._cd % interval != <span class="nb">0</span>: <span class="kw">return</span> messages\n'
