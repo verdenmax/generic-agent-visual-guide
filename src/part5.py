@@ -230,6 +230,99 @@ def lesson_21(t):
 
 
 def lesson_22(t):
-    return f'<p class="lead">{t("本课内容正在编写中。", "This lesson is being written.")}</p>'
+    """扩展前端 / 接入新 IM / Extending Frontends."""
+    return (
+        '<p class="lead">'
+        + t(
+            '还记得第 5 课说的“前端只是脸、内核是同一套循环”吗？这一课就把它落到代码：要接入一个新平台，'
+            '你只需写一层<strong>薄薄的适配器</strong>，把平台的收发消息接到 GA 的内核上——其余一律复用。',
+            'Remember lesson 5\'s "the frontend is just a face; the core is the same loop"? This lesson puts that into '
+            'code: to add a new platform, you only write a <strong>thin adapter</strong> connecting the platform\'s '
+            'message I/O to GA\'s core — everything else is reused.',
+        )
+        + '</p>'
+
+        + '<div class="card macro"><div class="tag">🌍 '
+        + t('宏观理解', 'The Big Picture') + '</div>'
+        + '<p>'
+        + t(
+            '每个前端文件做的事都一样：<strong>① 把平台收到的消息喂给 GA 内核；② 把 GA 的输出发回平台。</strong>'
+            '通用的命令处理、消息装配都集中在 chatapp_common 里复用。需要让<strong>多个 Agent 协作</strong>时，'
+            '还有一个 conductor 做编排。',
+            'Every frontend file does the same thing: <strong>(1) feed messages the platform receives into GA\'s core; '
+            '(2) send GA\'s output back to the platform.</strong> Shared command handling and message assembly live in '
+            'chatapp_common for reuse. When you need <strong>multiple agents to collaborate</strong>, there is also a '
+            'conductor for orchestration.',
+        )
+        + '</p></div>'
+
+        + '<h2>' + t('接入一个新平台', 'Wiring a new platform') + '</h2>'
+        + '<div class="vflow">'
+        + '<div class="step"><div class="num">1</div><div class="sc"><h4>'
+        + t('接内核', 'Connect the core') + '</h4><p class="mono">from agentmain import GenericAgent</p><p>'
+        + t('每个 frontends/*app.py 都从这里拿到同一套 Agent 入口。',
+            'Every frontends/*app.py gets the same agent entry from here.') + '</p></div></div>'
+        + '<div class="step"><div class="num">2</div><div class="sc"><h4>'
+        + t('复用通用逻辑', 'Reuse common logic') + '</h4><p>'
+        + t('命令（/new、/continue 等）与消息装配走 chatapp_common，不必重写。',
+            'Commands (/new, /continue …) and message assembly go through chatapp_common; no rewriting.') + '</p></div></div>'
+        + '<div class="step"><div class="num">3</div><div class="sc"><h4>'
+        + t('写平台 I/O', 'Write platform I/O') + '</h4><p>'
+        + t('只剩平台特有的收发：监听消息 → 交给内核 → 把回复发回去。',
+            'Only platform-specific I/O remains: listen for messages → hand to the core → send the reply back.') + '</p></div></div>'
+        + '</div>'
+
+        + '<div class="card detail"><div class="tag">🔬 '
+        + t('源码对应', 'In the Source') + '</div>'
+        + '<ul>'
+        + '<li>' + t('现成范例：', 'Ready examples: ')
+        + '<span class="inline">frontends/tgapp.py · wechatapp.py · fsapp.py</span>'
+        + t(' 等，每个都是“接内核 + 平台 I/O”的薄适配器。',
+            ' and more, each a thin "core + platform I/O" adapter.') + '</li>'
+        + '<li>' + t('共享逻辑在 ', 'Shared logic is in ')
+        + '<span class="inline">frontends/chatapp_common.py</span>'
+        + t('（命令清单、/new、/continue 的处理都在这里）。',
+            ' (the command list and the handling of /new, /continue live here).') + '</li>'
+        + '<li>' + t('多 Agent 编排在 ', 'Multi-agent orchestration is in ')
+        + '<span class="inline">frontends/conductor.py</span>'
+        + t('（FastAPI + WebSocket，import GenericAgent 来管理多个实例；可用 /conductor 触发）。',
+            ' (FastAPI + WebSocket, importing GenericAgent to manage multiple instances; triggerable via /conductor).') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card analogy"><div class="tag">🧩 '
+        + t('生活类比', 'Analogy') + '</div>'
+        + t(
+            '像给同一台游戏主机配一个新手柄：主机（内核）和游戏（能力）都不用动，你只要做一个<strong>转接头</strong>，'
+            '把新手柄的按键信号翻译成主机认识的格式。接微信、接钉钉，都是在做这种“转接头”，工作量小得惊人。',
+            'Like adding a new controller to the same game console: the console (core) and games (capabilities) stay '
+            'untouched; you only make an <strong>adapter</strong> that translates the new controller\'s button signals '
+            'into a format the console understands. Wiring WeChat or DingTalk is exactly making such an "adapter" — '
+            'surprisingly little work.',
+        )
+        + '</div>'
+
+        + '<div class="card key"><div class="tag">✅ '
+        + t('关键要点', 'Key Takeaways') + '</div><ul>'
+        + '<li>' + t('接新平台 = 写一个薄适配器：from agentmain import GenericAgent + 平台 I/O。',
+            'A new platform = a thin adapter: from agentmain import GenericAgent + platform I/O.') + '</li>'
+        + '<li>' + t('命令与消息装配复用 chatapp_common，不必重写。',
+            'Commands and message assembly reuse chatapp_common; no rewriting.') + '</li>'
+        + '<li>' + t('要多 Agent 协作，用 conductor.py 编排（/conductor）。',
+            'For multi-agent collaboration, orchestrate with conductor.py (/conductor).') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card spark"><div class="tag">💡 '
+        + t('设计亮点', 'Design Insight') + '</div>'
+        + t(
+            '“接一个新前端只要几十行”，是第 5 课<strong>界面/内核解耦</strong>结出的果。因为内核对“消息从哪来”一无所知，'
+            '前端就退化成纯粹的 I/O 转接——平台再多，内核一行都不用改。这正是好边界的价值：<strong>改动被牢牢锁在最外圈</strong>，'
+            '核心始终稳如磐石。',
+            '"A new frontend in a few dozen lines" is the fruit of lesson 5\'s <strong>interface/core decoupling</strong>. '
+            'Because the core knows nothing about "where a message comes from", a frontend degenerates into pure I/O '
+            'adaptation — no matter how many platforms, the core changes not a line. This is the value of good '
+            'boundaries: <strong>change is locked into the outermost ring</strong>, while the core stays rock-solid.',
+        )
+        + '</div>'
+    )
 
 
