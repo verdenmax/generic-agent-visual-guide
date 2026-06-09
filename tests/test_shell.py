@@ -15,8 +15,8 @@ import shell  # noqa: E402  (import after sys.path tweak, mirrors production)
 
 
 class TestPages(unittest.TestCase):
-    def test_count_is_23(self):
-        self.assertEqual(len(shell.PAGES), 23)
+    def test_count_is_24(self):
+        self.assertEqual(len(shell.PAGES), 24)
 
     def test_fnames_unique(self):
         fnames = [p.fname for p in shell.PAGES]
@@ -24,7 +24,7 @@ class TestPages(unittest.TestCase):
 
     def test_first_and_last(self):
         self.assertEqual(shell.PAGES[0].fname, "01-what-is-ga.html")
-        self.assertEqual(shell.PAGES[-1].fname, "23-glossary.html")
+        self.assertEqual(shell.PAGES[-1].fname, "24-glossary.html")
 
     def test_every_entry_has_bilingual_title_and_part(self):
         for p in shell.PAGES:
@@ -105,7 +105,7 @@ class TestPageNav(unittest.TestCase):
         self.assertIn('href="../index.html"', html)
 
     def test_last_next_points_home(self):
-        html = shell.page("23-glossary.html", "C")
+        html = shell.page("24-glossary.html", "C")
         # the next link on the last lesson returns to the index
         self.assertIn('href="../index.html"', html)
 
@@ -130,7 +130,7 @@ class TestPageNav(unittest.TestCase):
 
 class TestProgress(unittest.TestCase):
     def test_last_lesson_pct_100(self):
-        html = shell.page("23-glossary.html", "C")
+        html = shell.page("24-glossary.html", "C")
         self.assertIn("width:100%", html)
 
     def test_pct_increases_with_index(self):

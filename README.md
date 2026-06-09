@@ -8,7 +8,7 @@
 > self-evolving autonomous agent framework.
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
-![Lessons](https://img.shields.io/badge/lessons-23-blue.svg)
+![Lessons](https://img.shields.io/badge/lessons-24-blue.svg)
 ![Parts](https://img.shields.io/badge/parts-6-9cf.svg)
 ![Built with](https://img.shields.io/badge/built%20with-Python%203-3776AB.svg?logo=python&logoColor=white)
 ![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)
@@ -43,7 +43,7 @@ Just open **`index.html`** in a browser (works via `file://`).
 python -m http.server 8000   # → http://localhost:8000/
 ```
 
-## 📚 教程结构（6 部分 · 23 课）/ Structure (6 parts · 23 lessons)
+## 📚 教程结构（6 部分 · 24 课）/ Structure (6 parts · 24 lessons)
 
 **第一部分 · 宏观全景 / The Big Picture**
 1. GenericAgent 是什么 / What is GenericAgent
@@ -78,7 +78,8 @@ python -m http.server 8000   # → http://localhost:8000/
 22. 扩展前端 / 接入新 IM / Extending Frontends
 
 **第六部分 · 速查 / Reference**
-23. 术语表 + 源文件索引 / Glossary & Source Index
+23. 为什么强：定位 · 评测 · 技术报告 / Why It's Strong: Positioning & Evaluation
+24. 术语表 + 源文件索引 / Glossary & Source Index
 
 ## 🎨 每页包含 / On every page
 
@@ -94,14 +95,15 @@ python -m http.server 8000   # → http://localhost:8000/
 ```
 generic-agent-visual-guide/
 ├── index.html              ← 入口（目录页）/ entry (table of contents)
-├── lessons/                ← 23 课图解页面 / the 23 lesson pages
+├── lessons/                ← 24 课图解页面 / the 24 lesson pages
 │   ├── 01-what-is-ga.html
-│   └── … 23-glossary.html
+│   └── … 23-evaluation.html · 24-glossary.html
 ├── src/                    ← 无依赖 Python 生成器 / no-dependency Python generators
 │   ├── shell.py            共享外壳：CSS 设计系统 / 导航 / 语言切换 / index 页
 │   ├── i18n.py             双语助手 t(zh,en) / render_bilingual
 │   ├── components.py       深挖卡片构件 accordion / qa / codefile
 │   ├── part1.py … part5.py 各部分课程内容 / lesson content
+│   ├── evaluation.py       第 23 课：定位 · 评测 · 论文 / positioning · evaluation · paper
 │   ├── glossary.py         术语表 + 源文件索引 / glossary + source index
 │   ├── registry.py         文件名 → 课程函数 映射 / filename → lesson map
 │   ├── build.py            站点构建 / site build

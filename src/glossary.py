@@ -1,6 +1,6 @@
-"""Part 6 — 速查 / Reference (lesson 23): glossary + source-file index.
+"""Part 6 — 速查 / Reference (lesson 24): glossary + source-file index.
 
-``lesson_23(t)`` is a reference page, not a 5-card tutorial, so it is exempt
+``lesson_24(t)`` is a reference page, not a 5-card tutorial, so it is exempt
 from ``test_completed_lessons_follow_card_format``. Term and file rows link to
 the lesson that covers them (sibling .html files; links validated by
 check_links). ``t('中文', 'English')`` wraps every piece of prose.
@@ -18,7 +18,7 @@ def _term(t, term, zh, en, href, lesson_label):
     )
 
 
-def lesson_23(t):
+def lesson_24(t):
     """术语表 + 源文件索引 / Glossary & Source Index."""
     return (
         '<p class="lead">'

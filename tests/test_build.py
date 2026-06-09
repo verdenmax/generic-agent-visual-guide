@@ -43,9 +43,9 @@ class TestBuildPipeline(unittest.TestCase):
                 os.path.exists(os.path.join(ROOT, "lessons", p.fname)),
                 f"missing lessons/{p.fname}",
             )
-        self.assertEqual(len(shell.PAGES), 23)
-        # 23 lessons + index = 24 written files
-        self.assertEqual(len(self.written), 24)
+        self.assertEqual(len(shell.PAGES), 24)
+        # 24 lessons + index = 25 written files
+        self.assertEqual(len(self.written), 25)
 
     def test_bilingual_integrity(self):
         for p in shell.PAGES:
@@ -121,10 +121,10 @@ class TestBuildPipeline(unittest.TestCase):
     def test_completed_lessons_follow_card_format(self):
         # Validates the 5-card template for every COMPLETED tutorial lesson and
         # auto-skips stubs, so it scales to all lessons with no future edits.
-        # The glossary (23) is a reference/index page, not a 5-card tutorial,
+        # The glossary (24) is a reference/index page, not a 5-card tutorial,
         # so it is intentionally exempt.
         required = ['card macro', 'card detail', 'card analogy', 'card key', 'card spark']
-        EXEMPT = {'23-glossary.html'}
+        EXEMPT = {'24-glossary.html'}
         for fname, fn in registry.CONTENT.items():
             if fname in EXEMPT:
                 continue
@@ -146,7 +146,8 @@ class TestBuildPipeline(unittest.TestCase):
                 '13-hooks-observability.html', '14-context-tokens.html',
                 '15-vision.html', '16-input-mobile.html', '17-browser.html',
                 '18-reflect-orchestration.html', '19-autonomy.html',
-                '20-self-evolution.html', '21-build-a-skill.html', '22-extend-frontend.html'}
+                '20-self-evolution.html', '21-build-a-skill.html', '22-extend-frontend.html',
+                '23-evaluation.html'}
 
     def test_deepened_lessons_have_accordions(self):
         # Every deepened tutorial lesson must carry >= 2 deep-dive accordions.

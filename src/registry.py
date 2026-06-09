@@ -5,6 +5,7 @@ import part2
 import part3
 import part4
 import part5
+import evaluation
 import glossary
 
 CONTENT = {
@@ -30,5 +31,6 @@ CONTENT = {
     "20-self-evolution.html": part5.lesson_20,
     "21-build-a-skill.html": part5.lesson_21,
     "22-extend-frontend.html": part5.lesson_22,
-    "23-glossary.html": glossary.lesson_23,
+    "23-evaluation.html": evaluation.lesson_23,
+    "24-glossary.html": glossary.lesson_24,
 }

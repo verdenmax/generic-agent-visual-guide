@@ -97,7 +97,8 @@ PAGES = [
     Page("20-self-evolution.html", "自进化机制详解", "The Self-Evolution Mechanism", _P5_ZH, _P5_EN),
     Page("21-build-a-skill.html", "端到端实战：造一个新技能", "End-to-End: Build a Skill", _P5_ZH, _P5_EN),
     Page("22-extend-frontend.html", "扩展前端 / 接入新 IM", "Extending Frontends", _P5_ZH, _P5_EN),
-    Page("23-glossary.html", "术语表 + 源文件索引", "Glossary & Source Index", _P6_ZH, _P6_EN),
+    Page("23-evaluation.html", "为什么强：定位 · 评测 · 技术报告", "Why It's Strong: Positioning & Evaluation", _P6_ZH, _P6_EN),
+    Page("24-glossary.html", "术语表 + 源文件索引", "Glossary & Source Index", _P6_ZH, _P6_EN),
 ]
 
 # One-line bilingual subtitles for the TOC, keyed by fname → (zh, en).
@@ -124,7 +125,8 @@ SUBTITLES = {
     "20-self-evolution.html": ("Agent 如何改进自己", "How the agent improves itself"),
     "21-build-a-skill.html": ("从零造一个新技能的全过程", "Build a brand-new skill from scratch"),
     "22-extend-frontend.html": ("接入新 IM / 自定义前端", "Add a new IM / custom front-end"),
-    "23-glossary.html": ("术语一句话查 + 源文件索引", "One-line glossary + source index"),
+    "23-evaluation.html": ("定位 · 横向对比 · 五维评测 · 论文", "Positioning · comparison · evaluation · paper"),
+    "24-glossary.html": ("术语一句话查 + 源文件索引", "One-line glossary + source index"),
 }
 
 CSS = r"""
