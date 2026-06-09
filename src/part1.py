@@ -30,6 +30,9 @@ Any visible words must stay wrapped in ``t('zh','en')``; pure numerals/symbols
 (e.g. badge text ``①②③④``) need no translation.
 """
 
+import components as c
+
+
 
 def lesson_01(t):
     """GenericAgent 是什么 / What is GenericAgent — flagship overview."""
@@ -134,6 +137,99 @@ def lesson_01(t):
         + '<span class="inline">chat(messages, tools)</span>'
         + t(' 客户端与工具调用解析。', ' client and tool-call parsing.') + '</li>'
         + '</ul></div>'
+
+        + c.deepdive_heading(t)
+        + c.accordion(t, 1, '加法 vs 减法：为什么“做减法”反而更强',
+            'Addition vs subtraction: why "subtracting" wins',
+            c.qa(t, '❓ 为什么减法', 'Why subtract',
+                 '<p>' + t(
+                     '大模型的上下文越长，噪声越多、越容易分心和产生幻觉，而且<strong>越贵</strong>。'
+                     '把上下文常年压在 <span class="inline">&lt;30K</span>，相当于始终给模型一张干净的桌面——'
+                     '它只看见与当前任务相关的东西，判断更准、更省钱。',
+                     'The longer an LLM\'s context, the more noise, distraction and hallucination — and the '
+                     '<strong>more expensive</strong>. Keeping context under <span class="inline">&lt;30K</span> is '
+                     'like always handing the model a clean desk — it sees only what is relevant now, so it judges '
+                     'more accurately and costs less.') + '</p>')
+            + c.qa(t, '🧪 数量对比', 'By the numbers',
+                   '<p>' + t(
+                       '重型 Agent 的上下文常在 <span class="mono">200K–1M</span>，代码动辄几十万行；'
+                       'GenericAgent 上下文 <span class="mono">&lt;30K</span>、核心约 <span class="mono">3K</span> 行。'
+                       '少一个数量级，不是“功能更弱”，而是“噪声更少”。',
+                       'Heavyweight agents often run <span class="mono">200K–1M</span> of context and hundreds of '
+                       'thousands of lines of code; GenericAgent runs <span class="mono">&lt;30K</span> of context and '
+                       'a ~<span class="mono">3K</span>-line core. An order of magnitude smaller is not "weaker" but '
+                       '"less noisy".') + '</p>')
+            + c.qa(t, '⚠️ 加法的代价', 'The cost of addition',
+                   '<p>' + t(
+                       '预置几百个工具，模型每一轮都要在长长的工具清单里挑选，挑错的概率随之上升；'
+                       'GenericAgent 只有 <strong>9 个</strong>正交工具，模型几乎不会选错——这也是它成功率更高的原因之一。',
+                       'Preload hundreds of tools and the model must pick from a long list every turn, raising the '
+                       'odds of a wrong pick; GenericAgent offers only <strong>9</strong> orthogonal tools, so the '
+                       'model rarely mis-selects — one reason its success rate is higher.') + '</p>'))
+        + c.accordion(t, 2, '3K 行“种子代码”里到底有什么',
+            'What is actually inside the 3K-line "seed"',
+            c.qa(t, '🧪 核心文件清单', 'Core files',
+                 '<table class="t"><tr><th>' + t('文件', 'File') + '</th><th>'
+                 + t('约行数', '~lines') + '</th><th>' + t('职责', 'Role') + '</th></tr>'
+                 + '<tr><td class="mono">agent_loop.py</td><td class="mono">~133</td><td>'
+                 + t('自主执行循环', 'the autonomous loop') + '</td></tr>'
+                 + '<tr><td class="mono">llmcore.py</td><td class="mono">~1068</td><td>'
+                 + t('LLM 内核：多协议适配 / 流式', 'LLM core: multi-protocol / streaming') + '</td></tr>'
+                 + '<tr><td class="mono">simphtml.py</td><td class="mono">~873</td><td>'
+                 + t('网页 HTML 简化 / token 优化', 'web HTML simplification') + '</td></tr>'
+                 + '<tr><td class="mono">ga.py</td><td class="mono">~595</td><td>'
+                 + t('9 个原子工具的实现', 'the 9 atomic tools') + '</td></tr>'
+                 + '<tr><td class="mono">agentmain.py</td><td class="mono">~308</td><td>'
+                 + t('装配接线 / 启动', 'assembly & launch') + '</td></tr></table>')
+            + c.qa(t, '❓ 为什么能这么小', 'Why so small',
+                   '<p>' + t(
+                       '因为复杂度被<strong>外包</strong>了：推理交给大模型，扩展能力交给 '
+                       '<span class="inline">code_run</span>（运行时写代码）。框架本身只需提供“最小够用”的骨架——'
+                       '循环、工具、记忆——其余在使用中长出来。',
+                       'Because complexity is <strong>outsourced</strong>: reasoning goes to the LLM, and capability '
+                       'extension goes to <span class="inline">code_run</span> (writing code at runtime). The framework '
+                       'itself only needs a "minimal sufficient" skeleton — loop, tools, memory — the rest grows in '
+                       'use.') + '</p>'))
+        + c.accordion(t, 3, '“自进化”的一个真实例子：读微信记录',
+            'A real self-evolution example: reading WeChat messages',
+            c.qa(t, '🧪 第一次 vs 之后', 'First time vs after',
+                 '<table class="t"><tr><th>' + t('你说', 'You say') + '</th><th>'
+                 + t('第一次', 'First time') + '</th><th>' + t('之后每次', 'After') + '</th></tr>'
+                 + '<tr><td>' + t('“读我的微信记录”', '"Read my WeChat messages"') + '</td><td>'
+                 + t('装依赖 → 逆向数据库 → 写读取脚本 → 存为技能',
+                     'install deps → reverse the DB → write a read script → save as a skill') + '</td><td>'
+                 + t('一句话直接调用', 'one-line invoke') + '</td></tr></table>')
+            + c.qa(t, '⚙️ 用到哪些零件', 'Which parts it uses',
+                   '<p>' + t(
+                       '探索用 <span class="inline">code_run</span>，结晶用 '
+                       '<span class="inline">start_long_term_update</span>，技能落到 L3（memory/ 下的 *_sop.md）。'
+                       '全是后面课会讲的同一批零件——“造技能”没有新机制。',
+                       'Exploration uses <span class="inline">code_run</span>, crystallization uses '
+                       '<span class="inline">start_long_term_update</span>, and the skill lands in L3 (a *_sop.md under '
+                       'memory/). All the same parts later lessons cover — "building a skill" needs no new mechanism.') + '</p>')
+            + c.qa(t, '🔀 和无状态 Agent 对比', 'vs a stateless agent',
+                   '<p>' + t(
+                       '许多 Agent 会话之间是无状态的，每次都从零开始；GenericAgent 把经验留在记忆里，'
+                       '于是同类任务<strong>越做越快、越做越省</strong>。',
+                       'Many agents are stateless between sessions and start from scratch each time; GenericAgent keeps '
+                       'experience in memory, so similar tasks get <strong>faster and cheaper the more you do '
+                       'them</strong>.') + '</p>'))
+        + c.accordion(t, 4, '自我托管证明：这个仓库是它自己建的',
+            'Self-bootstrap proof: it built its own repo',
+            c.qa(t, '🧪 README 的声明', 'What the README claims',
+                 '<p>' + t(
+                     '据官方 README：这个仓库从安装 Git、运行 <span class="inline">git init</span>，到每一条 commit '
+                     'message，<strong>全部由 GenericAgent 自主完成</strong>，作者“从未打开过一次终端”。',
+                     'Per the official README: from installing Git and running <span class="inline">git init</span> to '
+                     'every commit message, this repo was <strong>completed autonomously by GenericAgent</strong> — the '
+                     'author "never opened a terminal once".') + '</p>')
+            + c.qa(t, '❓ 这说明什么', 'What this proves',
+                   '<p>' + t(
+                       '框架虽小，执行力却足以<strong>自举</strong>——用自己的 9 个工具搭起并维护自己的工程。'
+                       '这是对“极简也能强执行”最有力的证明。',
+                       'Though small, its execution is strong enough to <strong>bootstrap itself</strong> — building and '
+                       'maintaining its own project with its own 9 tools. The strongest proof that "minimal" can still '
+                       'mean "strong execution".') + '</p>'))
 
         + '<div class="card analogy"><div class="tag">🧩 '
         + t('生活类比', 'Analogy') + '</div>'
