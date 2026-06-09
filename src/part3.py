@@ -668,4 +668,112 @@ def lesson_13(t):
 
 
 def lesson_14(t):
-    return f'<p class="lead">{t("本课内容正在编写中。", "This lesson is being written.")}</p>'
+    """上下文工程与 Token 效率 / Context Engineering & Token Efficiency."""
+    return (
+        '<p class="lead">'
+        + t(
+            '别的 Agent 动辄吞下 200K–1M 的上下文，GenericAgent 却把自己控制在 <strong>&lt;30K</strong> 以内。'
+            '上下文小，不只是省钱——更意味着<strong>噪声更少、幻觉更少、成功率更高</strong>。这一课看 GA 是怎么做到的。',
+            'Other agents swallow 200K–1M tokens of context; GenericAgent keeps itself under <strong>&lt;30K</strong>. '
+            'A small context is not just cheaper — it means <strong>less noise, fewer hallucinations, and a higher '
+            'success rate</strong>. This lesson shows how GA pulls it off.',
+        )
+        + '</p>'
+
+        + '<div class="card macro"><div class="tag">🌍 '
+        + t('宏观理解', 'The Big Picture') + '</div>'
+        + '<p>'
+        + t(
+            'GA 的省 token 不是某一个开关，而是一整套“<strong>只留当下需要的</strong>”的习惯：历史不堆进 messages、'
+            '展示给模型的内容会被压缩、长长的工具参数会被精简、工具描述每隔几轮重置一次。再加上分层记忆与工作便签托底，'
+            '“忘掉原始历史”反而不丢关键信息。',
+            'GA\'s token thrift is not a single switch but a whole set of "<strong>keep only what is needed now</strong>" '
+            'habits: history is not piled into messages, content shown to the model is compacted, long tool arguments '
+            'are trimmed, and tool descriptions reset every few turns. Backed by layered memory and the working '
+            'notepad, "forgetting raw history" loses nothing essential.',
+        )
+        + '</p></div>'
+
+        + '<h2>' + t('几招压上下文', 'A few ways to shrink context') + '</h2>'
+        + '<table class="t">'
+        + '<tr><th>' + t('手段', 'Technique') + '</th><th>' + t('做什么', 'What it does') + '</th>'
+        + '<th>' + t('在哪', 'Where') + '</th></tr>'
+        + '<tr><td>' + t('只带新消息', 'Only the new message') + '</td><td>'
+        + t('每轮 messages 只放本轮新增内容，历史交给 Session。',
+            'Each turn\'s messages hold only what is new; history goes to the Session.')
+        + '</td><td class="mono">agent_loop.py</td></tr>'
+        + '<tr><td>' + t('压缩展示内容', 'Compact the display') + '</td><td>'
+        + t('把大代码块缩成预览、去掉 file_content/tool 标签、合并空行。',
+            'Shrink big code blocks to a preview, strip file_content/tool tags, collapse blank lines.')
+        + '</td><td class="mono">_clean_content</td></tr>'
+        + '<tr><td>' + t('精简工具参数', 'Trim tool args') + '</td><td>'
+        + t('在日志/展示里把冗长参数压短（如只留文件名）。',
+            'Shorten verbose args in logs/display (e.g. keep just the file name).')
+        + '</td><td class="mono">_compact_tool_args</td></tr>'
+        + '<tr><td>' + t('周期性重置', 'Periodic reset') + '</td><td>'
+        + t('每 10 轮清空一次工具描述，避免重复占位。',
+            'Clear the tool descriptions every 10 turns to avoid repeated bulk.')
+        + '</td><td class="mono">turn % 10 == 0</td></tr>'
+        + '<tr><td>' + t('压缩历史标签', 'Compress history') + '</td><td>'
+        + t('对较旧的消息做标签压缩 / 截断，保留最近若干轮。',
+            'Tag-compress / truncate older messages, keeping the most recent turns.')
+        + '</td><td class="mono">compress_history_tags</td></tr>'
+        + '</table>'
+
+        + '<div class="card detail"><div class="tag">🔬 '
+        + t('源码对应', 'In the Source') + '</div>'
+        + '<ul>'
+        + '<li>' + t('展示压缩在 ', 'Display compaction is in ')
+        + '<span class="inline">agent_loop.py: _clean_content</span>'
+        + t('：超过 6 行的代码块只留前 5 行 + “(N lines)”，并清掉 &lt;file_content&gt; / &lt;tool_use&gt; 等标签。',
+            ': code blocks over 6 lines keep the first 5 + "(N lines)", and &lt;file_content&gt; / &lt;tool_use&gt; '
+            'tags are stripped.') + '</li>'
+        + '<li>' + t('参数精简在 ', 'Argument trimming is in ')
+        + '<span class="inline">agent_loop.py: _compact_tool_args</span>'
+        + t('（如把 path 只显示 basename，超长则截断）。',
+            ' (e.g. show only the basename of path, truncate when over-long).') + '</li>'
+        + '<li>' + t('工具描述的周期重置：', 'Periodic tool-desc reset: ')
+        + '<span class="inline">if turn % 10 == 0: client.last_tools = \'\'</span>'
+        + t('，在循环里。', ', in the loop.') + '</li>'
+        + '<li>' + t('历史侧压缩在 ', 'History-side compression is in ')
+        + '<span class="inline">llmcore.py: compress_history_tags / trim_messages_history</span>'
+        + t('（保留最近若干轮，压缩/截断更早的内容）。',
+            ' (keep the latest turns, compress/truncate earlier content).') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card analogy"><div class="tag">🧩 '
+        + t('生活类比', 'Analogy') + '</div>'
+        + t(
+            '像一张<strong>整洁的工作台</strong>：手边只摆当前这道工序要用的零件，做完就归档进抽屉；台面永远清爽，'
+            '找东西又快又不容易拿错。GA 的上下文管理就是这种“桌面整洁术”——不是记得少，而是<strong>只把该上桌的摆上桌</strong>。',
+            'Like a <strong>tidy workbench</strong>: only the parts for the current step sit at hand, and finished ones '
+            'are filed into drawers; the surface stays clean, so you find things fast and rarely grab the wrong one. '
+            'GA\'s context management is exactly this "tidy-desk" art — not remembering less, but <strong>putting only '
+            'what belongs on the desk, on the desk</strong>.',
+        )
+        + '</div>'
+
+        + '<div class="card key"><div class="tag">✅ '
+        + t('关键要点', 'Key Takeaways') + '</div><ul>'
+        + '<li>' + t('目标：把上下文压到 <30K——更少噪声、更少幻觉、更低成本。',
+            'Goal: keep context under 30K — less noise, fewer hallucinations, lower cost.') + '</li>'
+        + '<li>' + t('组合拳：只带新消息 + _clean_content + _compact_tool_args + 周期重置 + 历史压缩。',
+            'A combo: only-new-message + _clean_content + _compact_tool_args + periodic reset + history compression.') + '</li>'
+        + '<li>' + t('分层记忆 + 工作便签兜底，所以“忘掉原始历史”不丢关键信息。',
+            'Layered memory + the working notepad backstop it, so "forgetting raw history" loses nothing essential.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card spark"><div class="tag">💡 '
+        + t('设计亮点', 'Design Insight') + '</div>'
+        + t(
+            '小上下文不是<strong>妥协</strong>，而是 GenericAgent 主动选择的<strong>特性</strong>。它敢于“忘掉”原始历史，'
+            '靠的是前几课的两块基石：<strong>分层记忆</strong>把该长期留的沉淀到 L1–L4，<strong>工作便签</strong>把当下该记的每轮回灌。'
+            '于是上下文越小、信号越纯、越不容易跑偏——长任务反而更稳。这正是 GA “少即是多”哲学在运行时最直接的体现。',
+            'A small context is not a <strong>compromise</strong> but a <strong>feature</strong> GenericAgent chooses. '
+            'It dares to "forget" raw history thanks to two foundations from earlier lessons: <strong>layered '
+            'memory</strong> settles what should persist into L1–L4, and the <strong>working notepad</strong> re-injects '
+            'what matters now each turn. So the smaller the context, the purer the signal and the less it drifts — long '
+            'tasks become more stable, not less. This is GA\'s "less is more" philosophy at its most direct, at runtime.',
+        )
+        + '</div>'
+    )
