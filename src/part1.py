@@ -458,7 +458,7 @@ def lesson_02(t):
                        '它<strong>不知道任何具体工具</strong>。工具实现全在 <span class="inline">ga.py</span>。'
                        '这样循环可以保持在约 100 行、长期不变，而工具能随便增删——两者通过一个简单约定（do_&lt;tool&gt; 方法 + '
                        'StepOutcome 返回值）解耦。',
-                       '<span class="inline">agent_loop.py</span> cares only about <em>rhythm</em> — ask the model, '
+                       '<span class="inline">agent_loop.py</span> cares only about "rhythm" — ask the model, '
                        'dispatch, collect results, decide whether to continue; it <strong>knows nothing about any '
                        'specific tool</strong>. Every tool lives in <span class="inline">ga.py</span>. That keeps the '
                        'loop around 100 lines and essentially frozen, while tools come and go freely — the two are '
@@ -486,7 +486,7 @@ def lesson_02(t):
                        '<span class="inline">class GenericAgentHandler(BaseHandler)</span> <strong>inherits</strong> the '
                        'dispatch machinery from the loop — it only has to supply the individual do_&lt;tool&gt; methods, '
                        'while routing is provided by <span class="inline">BaseHandler.dispatch</span> in the parent. '
-                       'In short: the loop defines <em>how</em> to dispatch; the subclass fills in <em>where</em> to.') + '</p>')
+                       'In short: the loop defines "how" to dispatch; the subclass fills in "where" to.') + '</p>')
             + c.qa(t, '⚠️ 一个容易看漏的细节', 'An easy detail to miss',
                    '<p>' + t(
                        'README/课程常说 max_turns 默认 40——那是 <span class="inline">agent_runner_loop</span> 的'

@@ -1163,7 +1163,7 @@ def lesson_13(t):
             'register / trigger: the entire pub-sub implementation',
             c.qa(t, '🧪 注册表 + 装饰器 + 触发', 'Registry + decorator + trigger',
                  c.codefile('plugins/hooks.py', 'register / trigger',
-                     '_registry = {}  <span class="cm"># ' + t('event_name -> [callback, ...]', 'event_name -> [callback, ...]') + '</span>\n\n'
+                     '_registry = {}  <span class="cm"># ' + t('event_name -&gt; [callback, ...]', 'event_name -&gt; [callback, ...]') + '</span>\n\n'
                      '<span class="kw">def</span> <span class="fn">register</span>(event):\n'
                      '    <span class="kw">def</span> <span class="fn">decorator</span>(fn):\n'
                      '        _registry.setdefault(event, []).<span class="fn">append</span>(fn); <span class="kw">return</span> fn\n'

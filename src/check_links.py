@@ -20,10 +20,10 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, ".."))
 
-HREF_RE = re.compile(r'href="([^"]+)"')
-# Assumes double-quoted attributes, consistent with HREF_RE and the shell's
-# double-quoted output.
-ID_RE = re.compile(r'id="([^"]+)"')
+HREF_RE = re.compile(r'''href=["']([^"']+)["']''')
+# Matches single- OR double-quoted attributes (the shell emits double quotes,
+# but this stays robust if a hand-written single-quoted href/id is introduced).
+ID_RE = re.compile(r'''id=["']([^"']+)["']''')
 SKIP_PREFIXES = ("http://", "https://", "mailto:", "data:")
 
 

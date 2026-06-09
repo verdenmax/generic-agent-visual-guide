@@ -550,7 +550,7 @@ def lesson_17(t):
             + c.qa(t, '⚙️ 变化监控怎么做', 'How change monitoring works',
                    '<p>' + t(
                        '执行前先抓一份 baseline HTML（注入 <span class="inline">temp_monitor_js</span>），执行后再抓一份，'
-                       '用 <span class="inline">find_changed_elements</span> 对比得出 <span class="mono">DOM变化量</span>；'
+                       '用 <span class="inline">find_changed_elements</span> 对比得出 DOM 变化量；'
                        '若 0 变化且无瞬时提示无新标签，就回 “页面无明显变化”，提醒模型这步可能没生效。',
                        'It grabs a baseline HTML first (injecting <span class="inline">temp_monitor_js</span>), grabs '
                        'another after execution, and diffs them via <span class="inline">find_changed_elements</span> to '
