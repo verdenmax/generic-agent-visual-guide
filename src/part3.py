@@ -359,7 +359,118 @@ def lesson_10(t):
 
 
 def lesson_11(t):
-    return f'<p class="lead">{t("本课内容正在编写中。", "This lesson is being written.")}</p>'
+    """分层记忆系统 L0–L4 / Layered Memory (L0–L4)."""
+    return (
+        '<p class="lead">'
+        + t(
+            'GenericAgent 的记忆不是一锅粥，而是一座<strong>金字塔</strong>：从最顶上的“铁律”，到一份极简索引、'
+            '一个事实库、一摞可复用的 SOP，再到最底层归档的历史会话。层层向下越来越细，向上越来越短。',
+            'GenericAgent\'s memory is not one big soup but a <strong>pyramid</strong>: from the "iron rules" at '
+            'the top, down to a tiny index, a facts store, a stack of reusable SOPs, and finally archived past '
+            'sessions at the bottom. Each layer down is more detailed; each layer up is shorter.',
+        )
+        + '</p>'
+
+        + '<div class="card macro"><div class="tag">🌍 '
+        + t('宏观理解', 'The Big Picture') + '</div>'
+        + '<p>'
+        + t(
+            '为什么要分层？因为上下文很贵。GA 让<strong>上层只放“能指向下层的最短指针”</strong>：平时只加载极简的索引，'
+            '真需要细节时再顺着指针去读对应的事实或 SOP。这样既不丢信息，又把每次喂给模型的上下文压到最小。',
+            'Why layer it? Because context is expensive. GA keeps <strong>upper layers holding only "the shortest '
+            'pointer to the layer below"</strong>: normally it loads just the tiny index, and only follows a '
+            'pointer to a fact or SOP when detail is actually needed. No information is lost, yet the context fed '
+            'to the model each time stays minimal.',
+        )
+        + '</p></div>'
+
+        + '<h2>' + t('五层记忆', 'Five memory layers') + '</h2>'
+        + '<div class="layers">'
+        + '<div class="layer l-core"><div class="lh"><span class="badge">L0</span>'
+        + '<span class="name">' + t('元规则 / Meta Rules', 'Meta Rules') + '</span></div>'
+        + '<div class="ld">' + t(
+            '最高优先级的行为铁律——如“无行动，不记忆”“禁止存易变状态”。见 memory/memory_management_sop.md 的核心公理。',
+            'Top-priority behavioral rules — e.g. "No execution, no memory", "Do not store volatile state". See the '
+            'core axioms in memory/memory_management_sop.md.') + '</div></div>'
+        + '<div class="layer l-main"><div class="lh"><span class="badge">L1</span>'
+        + '<span class="name">' + t('索引 / Insight Index', 'Insight Index') + '</span></div>'
+        + '<div class="ld">' + t(
+            '极简导航索引（global_mem_insight.txt，硬约束 ≤ 30 行），只留能定位 L2/L3 的最短标识。',
+            'A tiny navigation index (global_mem_insight.txt, hard cap ≤ 30 lines) holding only the shortest '
+            'locators into L2/L3.') + '</div></div>'
+        + '<div class="layer l-part"><div class="lh"><span class="badge">L2</span>'
+        + '<span class="name">' + t('事实库 / Global Facts', 'Global Facts') + '</span></div>'
+        + '<div class="ld">' + t(
+            '经行动验证的稳定知识（global_mem.txt）：路径、凭证、配置等长期有效的事实。',
+            'Action-verified, stable knowledge (global_mem.txt): paths, credentials, configs and other long-lived '
+            'facts.') + '</div></div>'
+        + '<div class="layer l-app"><div class="lh"><span class="badge">L3</span>'
+        + '<span class="name">' + t('技能 / Task Skills · SOPs', 'Task Skills · SOPs') + '</span></div>'
+        + '<div class="ld">' + t(
+            '可复用的工作流：memory/ 下的一摞 .md / .py（如 plan_sop.md、verify_sop.md）。这是“技能”真正住的地方。',
+            'Reusable workflows: a stack of .md / .py under memory/ (e.g. plan_sop.md, verify_sop.md). This is where '
+            '"skills" actually live.') + '</div></div>'
+        + '<div class="layer l-part"><div class="lh"><span class="badge">L4</span>'
+        + '<span class="name">' + t('归档 / Session Archive', 'Session Archive') + '</span></div>'
+        + '<div class="ld">' + t(
+            '历史会话存档（memory/L4_raw_sessions/），由 reflect/scheduler 自动收集，供长程回溯定位过往上下文。',
+            'Archived past sessions (memory/L4_raw_sessions/), auto-collected by reflect/scheduler, for long-horizon '
+            'recall of earlier context.') + '</div></div>'
+        + '</div>'
+
+        + '<div class="card detail"><div class="tag">🔬 '
+        + t('源码对应', 'In the Source') + '</div>'
+        + '<ul>'
+        + '<li>' + t('层级架构与各层职责写在 ', 'The layer architecture and each layer\'s duties are written in ')
+        + '<span class="inline">memory/memory_management_sop.md</span>'
+        + t('（含 L1→L2→L3→L4 的“指针 → 引用”导航链）。',
+            ' (including the "pointer → reference" navigation chain L1→L2→L3→L4).') + '</li>'
+        + '<li>' + t('L3 就是 ', 'L3 is the ')
+        + '<span class="inline">memory/</span>'
+        + t(' 目录本身：里面是一堆 *_sop.md（plan_sop、verify_sop、github_contribution_sop…）。',
+            ' directory itself: a pile of *_sop.md files (plan_sop, verify_sop, github_contribution_sop …).') + '</li>'
+        + '<li>' + t('L4 在 ', 'L4 lives in ')
+        + '<span class="inline">memory/L4_raw_sessions/</span>'
+        + t('，由 reflect/scheduler.py 的反射任务自动归集。',
+            ', auto-collected by reflection tasks in reflect/scheduler.py.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card analogy"><div class="tag">🧩 '
+        + t('生活类比', 'Analogy') + '</div>'
+        + t(
+            '像一本整理得很好的<strong>活页笔记</strong>：封面写着几条铁律（L0），第一页是目录（L1），'
+            '后面是事实速查页（L2），再后面是一篇篇“怎么做某事”的食谱（L3），最后附着一摞旧日记（L4）。'
+            '你平时只翻目录，需要时才按页码翻到具体那一篇。',
+            'Like a well-organized <strong>loose-leaf notebook</strong>: the cover lists a few iron rules (L0), the '
+            'first page is the table of contents (L1), then a facts cheat-sheet (L2), then "how to do X" recipes '
+            '(L3), and finally a stack of old diaries (L4). You usually only read the contents page and flip to a '
+            'specific recipe by its number when needed.',
+        )
+        + '</div>'
+
+        + '<div class="card key"><div class="tag">✅ '
+        + t('关键要点', 'Key Takeaways') + '</div><ul>'
+        + '<li>' + t('五层：L0 铁律 · L1 索引 · L2 事实 · L3 技能/SOP · L4 会话归档。',
+            'Five layers: L0 rules · L1 index · L2 facts · L3 skills/SOPs · L4 session archive.') + '</li>'
+        + '<li>' + t('上层只放“最短指针”，按需顺着指针读下层细节。',
+            'Upper layers hold only "the shortest pointer"; follow it to read lower-layer detail on demand.') + '</li>'
+        + '<li>' + t('L3（memory/ 下的 SOP）就是技能真正存放的地方。',
+            'L3 (the SOPs under memory/) is where skills actually live.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card spark"><div class="tag">💡 '
+        + t('设计亮点', 'Design Insight') + '</div>'
+        + t(
+            '分层的精髓是“<strong>最小充分指针</strong>”：每往上一层，只保留刚好够定位下一层的那点信息，多一个词都算冗余。'
+            '正因为索引被压到 ≤ 30 行，GA 才能把“我知道很多东西”和“每次只加载一点点”这对矛盾同时满足——'
+            '这也是它能在 &lt;30K 上下文里稳定工作的记忆侧根基。',
+            'The essence of layering is the "<strong>minimum sufficient pointer</strong>": each layer up keeps just '
+            'enough to locate the layer below — one extra word is redundancy. Because the index is squeezed to ≤ 30 '
+            'lines, GA can satisfy both "I know a lot" and "I load only a little each time" at once — the memory-side '
+            'foundation for working steadily within a &lt;30K context.',
+        )
+        + '</div>'
+    )
 
 
 def lesson_12(t):
