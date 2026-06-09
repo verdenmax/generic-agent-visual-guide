@@ -1451,7 +1451,7 @@ def lesson_14(t):
 
         + '<div class="card key"><div class="tag">✅ '
         + t('关键要点', 'Key Takeaways') + '</div><ul>'
-        + '<li>' + t('目标：把上下文压到 <30K——更少噪声、更少幻觉、更低成本。',
+        + '<li>' + t('目标：把上下文压到 &lt;30K——更少噪声、更少幻觉、更低成本。',
             'Goal: keep context under 30K — less noise, fewer hallucinations, lower cost.') + '</li>'
         + '<li>' + t('组合拳：只带新消息 + _clean_content + _compact_tool_args + 周期重置 + 历史压缩。',
             'A combo: only-new-message + _clean_content + _compact_tool_args + periodic reset + history compression.') + '</li>'

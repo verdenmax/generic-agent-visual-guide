@@ -2,7 +2,7 @@
 <html class="lang-zh" lang="zh-CN"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script>document.documentElement.className = 'lang-' + (localStorage.getItem('galang') || 'zh');</script>
+<script>var _l=localStorage.getItem('galang')||'zh';document.documentElement.className='lang-'+_l;document.documentElement.lang=(_l==='zh')?'zh-CN':'en';</script>
 <title>08 · Agent Loop 核心拆解 / The Agent Loop — GenericAgent 图解教程</title>
 <meta name="description" content="第三部分 · 内部源码｜Agent Loop 核心拆解：面向新手的 GenericAgent 图解教程，配真实源码对应与设计亮点。">
 <meta name="theme-color" content="#5b4ddb">
@@ -357,15 +357,20 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
 </div>
 <script>
 (function(){
-  var btn=document.getElementById('langbtn'); if(!btn) return;
   function cur(){ return (localStorage.getItem('galang')||'zh'); }
-  function paint(){ btn.textContent = (cur()==='zh') ? 'EN' : '中'; }
-  paint();
-  btn.addEventListener('click',function(){
-    var next = (cur()==='zh') ? 'en' : 'zh';
-    localStorage.setItem('galang', next);
-    document.documentElement.className = 'lang-' + next;
-    paint();
+  function apply(){
+    var l=cur();
+    document.documentElement.className='lang-'+l;
+    document.documentElement.lang=(l==='zh')?'zh-CN':'en';
+    var btn=document.getElementById('langbtn'); if(btn) btn.textContent=(l==='zh')?'EN':'中';
+    var q=document.getElementById('q');
+    if(q){ var p=q.getAttribute(l==='zh'?'data-ph-zh':'data-ph-en'); if(p) q.placeholder=p; }
+  }
+  apply();
+  var btn=document.getElementById('langbtn');
+  if(btn) btn.addEventListener('click',function(){
+    localStorage.setItem('galang', cur()==='zh'?'en':'zh');
+    apply();
   });
 })();
 </script>

@@ -2,7 +2,7 @@
 <html class="lang-zh" lang="zh-CN"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script>document.documentElement.className = 'lang-' + (localStorage.getItem('galang') || 'zh');</script>
+<script>var _l=localStorage.getItem('galang')||'zh';document.documentElement.className='lang-'+_l;document.documentElement.lang=(_l==='zh')?'zh-CN':'en';</script>
 <title>GenericAgent 图解教程 · GenericAgent Visual Guide</title>
 <meta name="description" content="从零理解整个 GenericAgent 项目的双语图解教程：宏观全景、用户视角、内部源码、进阶能力、实战与速查。">
 <meta name="theme-color" content="#5b4ddb">
@@ -286,7 +286,7 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
     <p style="margin:.9rem 0 0;color:var(--faint);font-size:.8rem"><span class="zh">📌 对照 GenericAgent <strong><span class="mono">main</span></strong> 源码讲解 · 引用以「文件 + 符号名」为主（行号会随上游更新而变）</span><span class="en">📌 Based on the GenericAgent <strong><span class="mono">main</span></strong> source · references cite file + symbol name (line numbers drift with upstream)</span></p>
   </div>
   <div class="toc-search">
-    <input id="q" type="search" placeholder="🔎 搜索课程：标题 / 关键词" autocomplete="off" aria-label="搜索课程 / Search lessons">
+    <input id="q" type="search" data-ph-zh="🔎 搜索课程：标题 / 关键词" data-ph-en="🔎 Search lessons: title / keyword" placeholder="🔎 搜索课程：标题 / 关键词" autocomplete="off" aria-label="搜索课程 / Search lessons">
     <span class="qcount" id="qcount"></span>
   </div>
   <div class="toc"><div class="toc-part"><span class="zh">第一部分 · 宏观全景</span><span class="en">Part 1 · The Big Picture</span></div>
@@ -305,7 +305,7 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
 <a href="lessons/11-layered-memory.html"><span class="n">11</span><span class="tt"><span class="zh">分层记忆系统 L0–L4</span><span class="en">Layered Memory (L0–L4)</span></span><span class="ts"><span class="zh">L0–L4 五层记忆各自的角色</span><span class="en">The roles of memory layers L0–L4</span></span></a>
 <a href="lessons/12-memory-crystallize.html"><span class="n">12</span><span class="tt"><span class="zh">记忆的读写与结晶</span><span class="en">Memory & Crystallization</span></span><span class="ts"><span class="zh">记忆的读写、压缩与结晶</span><span class="en">Reading, writing and crystallizing memory</span></span></a>
 <a href="lessons/13-hooks-observability.html"><span class="n">13</span><span class="tt"><span class="zh">钩子与可观测性</span><span class="en">Hooks & Observability</span></span><span class="ts"><span class="zh">钩子机制 · 日志与可观测性</span><span class="en">Hooks · logging and observability</span></span></a>
-<a href="lessons/14-context-tokens.html"><span class="n">14</span><span class="tt"><span class="zh">上下文工程与 Token 效率</span><span class="en">Context Engineering & Token Efficiency</span></span><span class="ts"><span class="zh">如何把上下文压到 <30K</span><span class="en">Keeping the context under 30K</span></span></a>
+<a href="lessons/14-context-tokens.html"><span class="n">14</span><span class="tt"><span class="zh">上下文工程与 Token 效率</span><span class="en">Context Engineering & Token Efficiency</span></span><span class="ts"><span class="zh">如何把上下文压到 &lt;30K</span><span class="en">Keeping the context under 30K</span></span></a>
 <div class="toc-part"><span class="zh">第四部分 · 进阶能力</span><span class="en">Part 4 · Advanced Capabilities</span></div>
 <a href="lessons/15-vision.html"><span class="n">15</span><span class="tt"><span class="zh">计算机控制 · 视觉</span><span class="en">Computer Control · Vision</span></span><span class="ts"><span class="zh">截屏理解 · 视觉驱动控制</span><span class="en">Screenshot understanding · vision control</span></span></a>
 <a href="lessons/16-input-mobile.html"><span class="n">16</span><span class="tt"><span class="zh">输入与移动端</span><span class="en">Input & Mobile (ADB)</span></span><span class="ts"><span class="zh">键鼠输入 · ADB 操控移动端</span><span class="en">Keyboard/mouse · ADB mobile control</span></span></a>
@@ -322,15 +322,20 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
 </div>
 <script>
 (function(){
-  var btn=document.getElementById('langbtn'); if(!btn) return;
   function cur(){ return (localStorage.getItem('galang')||'zh'); }
-  function paint(){ btn.textContent = (cur()==='zh') ? 'EN' : '中'; }
-  paint();
-  btn.addEventListener('click',function(){
-    var next = (cur()==='zh') ? 'en' : 'zh';
-    localStorage.setItem('galang', next);
-    document.documentElement.className = 'lang-' + next;
-    paint();
+  function apply(){
+    var l=cur();
+    document.documentElement.className='lang-'+l;
+    document.documentElement.lang=(l==='zh')?'zh-CN':'en';
+    var btn=document.getElementById('langbtn'); if(btn) btn.textContent=(l==='zh')?'EN':'中';
+    var q=document.getElementById('q');
+    if(q){ var p=q.getAttribute(l==='zh'?'data-ph-zh':'data-ph-en'); if(p) q.placeholder=p; }
+  }
+  apply();
+  var btn=document.getElementById('langbtn');
+  if(btn) btn.addEventListener('click',function(){
+    localStorage.setItem('galang', cur()==='zh'?'en':'zh');
+    apply();
   });
 })();
 </script>

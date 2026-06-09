@@ -191,7 +191,7 @@ def lesson_23(t):
                      '(writing code at runtime), experience to layered memory. The framework only provides a minimal '
                      '"loop + 9 tools + memory" skeleton. See ')
                  + '<a href="01-what-is-ga.html">' + t('第 1 课', 'lesson 01') + '</a> '
-                 + t('与', 'and') + ' <a href="20-self-evolution.html">' + t('第 20 课', 'lesson 20') + '</a>。</p>'))
+                 + t('与', 'and') + ' <a href="20-self-evolution.html">' + t('第 20 课', 'lesson 20') + '</a>' + t('。', '.') + '</p>'))
         + c.accordion(t, 2, '它支持哪些大模型？',
             'Which LLMs does it support?',
             c.qa(t, '两种协议', 'Two protocols',
@@ -203,7 +203,7 @@ def lesson_23(t):
                      'protocols, so GPT / Claude / Kimi / MiniMax / DeepSeek / GLM / Qwen / Gemini and more can be configured '
                      'in <span class="inline">mykey.py</span>. Even models without function calling can use tools via the '
                      'text protocol (see ')
-                 + '<a href="09-llmcore.html">' + t('第 9 课', 'lesson 09') + '</a>）。</p>'))
+                 + '<a href="09-llmcore.html">' + t('第 9 课', 'lesson 09') + '</a>' + t('）。', ').') + '</p>'))
         + c.accordion(t, 3, '记忆会不会越记越乱？',
             'Won\'t memory get messier over time?',
             c.qa(t, '靠铁律守住', 'Guarded by iron rules',
@@ -213,7 +213,7 @@ def lesson_23(t):
                      'No. The L0 rules state "<strong>no execution, no memory</strong>" — only conclusions verified by a '
                      'successful tool call may be written; volatile state is banned and patches must be minimal. So the '
                      'store gets "more accurate", not "dirtier". See ')
-                 + '<a href="12-memory-crystallize.html">' + t('第 12 课', 'lesson 12') + '</a>。</p>'))
+                 + '<a href="12-memory-crystallize.html">' + t('第 12 课', 'lesson 12') + '</a>' + t('。', '.') + '</p>'))
 
         + '<div class="card key"><div class="tag">🏁 '
         + t('读完了', 'You made it') + '</div>'

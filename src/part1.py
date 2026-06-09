@@ -269,7 +269,7 @@ def lesson_01(t):
                     'GenericAgent = minimal seed + 9 atomic tools + ~100-line loop + self-evolving memory.') + '</li>'
         + '<li>' + t('核心哲学：不预设技能，靠进化获得能力。',
                     'Core philosophy: don\'t preload skills, evolve them.') + '</li>'
-        + '<li>' + t('上下文常年 <30K，比动辄百万 token 的方案更省、更准。',
+        + '<li>' + t('上下文常年 &lt;30K，比动辄百万 token 的方案更省、更准。',
                     'It keeps context under ~30K tokens — cheaper and less error-prone than million-token designs.') + '</li>'
         + '<li>' + t('“少即是多”不是口号，而是可在源码中逐条验证的工程选择。',
                     '"Less is more" is not a slogan here — it is an engineering choice you can verify line by line in the source.') + '</li>'

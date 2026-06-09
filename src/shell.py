@@ -16,7 +16,6 @@ language. All chrome that differs by language uses :func:`i18n.bi` inline spans.
 import base64
 from collections import namedtuple
 
-import i18n
 from i18n import bi
 
 # ---- favicon (inline SVG, base64): rounded square, white "GA" on accent ----
@@ -34,10 +33,15 @@ INDEX_FILE = "index.html"
 SITE_NAME = bi("GenericAgent 图解教程", "GenericAgent Visual Guide")
 
 
+def _esc(s):
+    """Escape text for HTML element content / titles (& and < and >)."""
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
 def head_meta(title, description, og_type="website"):
     """SEO / social meta tags + favicon for a page <head> (zh meta is fine)."""
-    t = title.replace('"', "&quot;")
-    d = description.replace('"', "&quot;")
+    t = title.replace("&", "&amp;").replace("<", "&lt;").replace('"', "&quot;")
+    d = description.replace("&", "&amp;").replace("<", "&lt;").replace('"', "&quot;")
     return (
         f'<meta name="description" content="{d}">\n'
         f'<meta name="theme-color" content="#5b4ddb">\n'
@@ -52,10 +56,12 @@ def head_meta(title, description, og_type="website"):
     )
 
 
-# Inline <head> script: set the language class BEFORE body render (FOUC-free).
+# Inline <head> script: set the language class + lang attr BEFORE body render
+# (FOUC-free), so the right language shows immediately and a11y/SEO lang is correct.
 FOUC_SCRIPT = (
-    "document.documentElement.className = "
-    "'lang-' + (localStorage.getItem('galang') || 'zh');"
+    "var _l=localStorage.getItem('galang')||'zh';"
+    "document.documentElement.className='lang-'+_l;"
+    "document.documentElement.lang=(_l==='zh')?'zh-CN':'en';"
 )
 
 # ---- bilingual page model ----
@@ -109,7 +115,7 @@ SUBTITLES = {
     "11-layered-memory.html": ("L0–L4 五层记忆各自的角色", "The roles of memory layers L0–L4"),
     "12-memory-crystallize.html": ("记忆的读写、压缩与结晶", "Reading, writing and crystallizing memory"),
     "13-hooks-observability.html": ("钩子机制 · 日志与可观测性", "Hooks · logging and observability"),
-    "14-context-tokens.html": ("如何把上下文压到 <30K", "Keeping the context under 30K"),
+    "14-context-tokens.html": ("如何把上下文压到 &lt;30K", "Keeping the context under 30K"),
     "15-vision.html": ("截屏理解 · 视觉驱动控制", "Screenshot understanding · vision control"),
     "16-input-mobile.html": ("键鼠输入 · ADB 操控移动端", "Keyboard/mouse · ADB mobile control"),
     "17-browser.html": ("注入脚本 · 浏览器与 Web 工具", "Script injection · browser & web tools"),
@@ -404,15 +410,20 @@ SEARCH_JS = """
 # OTHER language (so it reads "EN" while zh, "中" while en).
 LANG_JS = """
 (function(){
-  var btn=document.getElementById('langbtn'); if(!btn) return;
   function cur(){ return (localStorage.getItem('galang')||'zh'); }
-  function paint(){ btn.textContent = (cur()==='zh') ? 'EN' : '中'; }
-  paint();
-  btn.addEventListener('click',function(){
-    var next = (cur()==='zh') ? 'en' : 'zh';
-    localStorage.setItem('galang', next);
-    document.documentElement.className = 'lang-' + next;
-    paint();
+  function apply(){
+    var l=cur();
+    document.documentElement.className='lang-'+l;
+    document.documentElement.lang=(l==='zh')?'zh-CN':'en';
+    var btn=document.getElementById('langbtn'); if(btn) btn.textContent=(l==='zh')?'EN':'\u4e2d';
+    var q=document.getElementById('q');
+    if(q){ var p=q.getAttribute(l==='zh'?'data-ph-zh':'data-ph-en'); if(p) q.placeholder=p; }
+  }
+  apply();
+  var btn=document.getElementById('langbtn');
+  if(btn) btn.addEventListener('click',function(){
+    localStorage.setItem('galang', cur()==='zh'?'en':'zh');
+    apply();
   });
 })();
 """
@@ -482,7 +493,7 @@ def page(fname, content, home_href="../index.html"):
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>{FOUC_SCRIPT}</script>
-<title>{page_title}</title>
+<title>{_esc(page_title)}</title>
 {meta}
 <style>{CSS}</style>
 </head><body>
@@ -560,7 +571,7 @@ def index_page(lesson_prefix="lessons/"):
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>{FOUC_SCRIPT}</script>
-<title>{page_title}</title>
+<title>{_esc(page_title)}</title>
 {meta}
 <style>{CSS}</style>
 </head><body>
@@ -587,7 +598,7 @@ def index_page(lesson_prefix="lessons/"):
     <p style="margin:.9rem 0 0;color:var(--faint);font-size:.8rem">{anchor}</p>
   </div>
   <div class="toc-search">
-    <input id="q" type="search" placeholder="{i18n.t_zh('🔎 搜索课程：标题 / 关键词', '🔎 Search lessons: title / keyword')}" autocomplete="off" aria-label="搜索课程 / Search lessons">
+    <input id="q" type="search" data-ph-zh="🔎 搜索课程：标题 / 关键词" data-ph-en="🔎 Search lessons: title / keyword" placeholder="🔎 搜索课程：标题 / 关键词" autocomplete="off" aria-label="搜索课程 / Search lessons">
     <span class="qcount" id="qcount"></span>
   </div>
   <div class="toc">{toc}</div>
