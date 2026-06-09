@@ -145,7 +145,109 @@ def lesson_08(t):
 
 
 def lesson_09(t):
-    return f'<p class="lead">{t("本课内容正在编写中。", "This lesson is being written.")}</p>'
+    """LLM 内核 llmcore.py / The LLM Core."""
+    return (
+        '<p class="lead">'
+        + t(
+            '循环只调用一个方法——<span class="inline">client.chat(messages, tools)</span>。'
+            '至于背后是 Claude、GPT，还是 Kimi、DeepSeek；是“原生函数调用”还是“纯文本协议”——'
+            '这些差异全被 <span class="inline">llmcore.py</span> 抹平，对外只露出一个统一的、可流式的 chat 接口。',
+            'The loop calls just one method — <span class="inline">client.chat(messages, tools)</span>. '
+            'Whether the backend is Claude, GPT, Kimi or DeepSeek; whether it does "native function calling" or '
+            'a "plain-text protocol" — all those differences are flattened by '
+            '<span class="inline">llmcore.py</span>, which exposes one unified, streamable chat interface.',
+        )
+        + '</p>'
+
+        + '<div class="card macro"><div class="tag">🌍 '
+        + t('宏观理解', 'The Big Picture') + '</div>'
+        + '<p>'
+        + t(
+            'llmcore 干两件事：<strong>① 适配</strong>——把各家不同的请求/响应格式翻译成 GA 内部统一的对象；'
+            '<strong>② 流式</strong>——一边把模型吐出的字实时显示给你，一边在结束时把回复解析成结构化的 '
+            'tool_calls。它原生支持 OpenAI 兼容接口与 Anthropic Claude 原生接口两套协议。',
+            'llmcore does two things: <strong>(1) adaptation</strong> — translating each vendor\'s request/'
+            'response shapes into GA\'s unified internal objects; and <strong>(2) streaming</strong> — showing '
+            'the model\'s tokens live while parsing the finished reply into structured tool_calls. It natively '
+            'supports both the OpenAI-compatible and the Anthropic Claude native protocols.',
+        )
+        + '</p></div>'
+
+        + '<h2>' + t('两种工具协议', 'Two tool protocols') + '</h2>'
+        + '<div class="cols">'
+        + '<div class="col"><h4>' + t('原生函数调用', 'Native function calling') + '</h4><p>'
+        + t('把工具 schema 交给支持 function-calling 的模型 API，直接拿回结构化的 tool_calls。实现见 ',
+            'Hand the tools schema to a model API that supports function calling and get structured tool_calls '
+            'back directly. See ')
+        + '<span class="inline">NativeToolClient</span>' + t('。', '.') + '</p></div>'
+        + '<div class="col"><h4>' + t('纯文本协议', 'Plain-text protocol') + '</h4><p>'
+        + t('对不支持函数调用的模型，先把工具说明拼进提示词，再从模型的文本回复里把工具调用解析出来。实现见 ',
+            'For models without function calling, weave the tool instructions into the prompt, then parse tool '
+            'calls out of the model\'s text reply. See ')
+        + '<span class="inline">ToolClient</span>' + t('。', '.') + '</p></div>'
+        + '</div>'
+
+        + '<div class="card detail"><div class="tag">🔬 '
+        + t('源码对应', 'In the Source') + '</div>'
+        + '<ul>'
+        + '<li>' + t('两个客户端：', 'Two clients: ')
+        + '<span class="inline">ToolClient</span>' + t('（文本协议）与 ', ' (text protocol) and ')
+        + '<span class="inline">NativeToolClient</span>'
+        + t('（原生协议），都提供 ', ' (native protocol), both exposing ')
+        + '<span class="inline">chat(messages, tools)</span>' + t('。', '.') + '</li>'
+        + '<li>' + t('多种会话后端：', 'Several session backends: ')
+        + '<span class="inline">ClaudeSession / LLMSession / NativeClaudeSession / NativeOAISession</span>'
+        + t('，并由 ', ', aggregated by ')
+        + '<span class="inline">MixinSession</span>'
+        + t(' 聚合多个后端；通过 ', '; the ')
+        + '<span class="inline">api_mode</span>'
+        + t(' 在 chat_completions 与 responses 之间切换。',
+            ' switches between chat_completions and responses.') + '</li>'
+        + '<li>' + t('流式由 SSE 解析器处理（', 'Streaming is handled by SSE parsers (')
+        + '<span class="inline">_parse_openai_sse</span>' + t(' / ', ' / ')
+        + '<span class="inline">_parse_claude_sse</span>'
+        + t('）；不同协议的工具调用统一成 ', '); tool calls from any protocol are normalized into ')
+        + '<span class="inline">MockResponse / MockToolCall</span>'
+        + t('，所以循环永远只看到同一种 response 对象。',
+            ', so the loop always sees the same kind of response object.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card analogy"><div class="tag">🧩 '
+        + t('生活类比', 'Analogy') + '</div>'
+        + t(
+            '像一个<strong>万能电源适配器</strong>：欧标、美标、英标插头形状各异，适配器统一转成你设备要的那一种。'
+            'llmcore 就是模型世界的适配器——无论模型“插头”长什么样，循环拿到的永远是同一个标准接口。',
+            'Like a <strong>universal power adapter</strong>: EU, US, UK plugs all look different, and the adapter '
+            'converts them to the one your device needs. llmcore is that adapter for the model world — whatever a '
+            'model\'s "plug" looks like, the loop always receives the same standard interface.',
+        )
+        + '</div>'
+
+        + '<div class="card key"><div class="tag">✅ '
+        + t('关键要点', 'Key Takeaways') + '</div><ul>'
+        + '<li>' + t('对外只有一个统一入口 chat(messages, tools)，屏蔽所有模型差异。',
+            'There is one unified entry, chat(messages, tools), hiding all model differences.') + '</li>'
+        + '<li>' + t('两种工具协议：原生函数调用（NativeToolClient）与纯文本协议（ToolClient）。',
+            'Two tool protocols: native function calling (NativeToolClient) and text protocol (ToolClient).') + '</li>'
+        + '<li>' + t('不同协议的回复统一成 MockResponse / MockToolCall，循环无需关心来源。',
+            'Replies from any protocol become MockResponse / MockToolCall, so the loop need not care about the source.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card spark"><div class="tag">💡 '
+        + t('设计亮点', 'Design Insight') + '</div>'
+        + t(
+            '<span class="inline">chat()</span> 是个<strong>生成器</strong>：它一边 yield 流式字符，一边在结束时 '
+            'return 解析好的结构化回复。这正是循环里那句 <span class="inline">response = yield from client.chat(...)</span> '
+            '能同时拿到“实时输出”和“最终结果”的原因。更妙的是文本协议这条退路——它让<strong>连函数调用都不支持的模型也能用上工具</strong>，'
+            '把 GA 的“高兼容性”落到了实处。',
+            '<span class="inline">chat()</span> is a <strong>generator</strong>: it yields streaming characters '
+            'while returning the parsed, structured reply at the end. That is exactly why the loop\'s '
+            '<span class="inline">response = yield from client.chat(...)</span> gets both "live output" and the '
+            '"final result". Even better is the text-protocol fallback — it lets <strong>models without function '
+            'calling still use tools</strong>, making GA\'s "high compatibility" real.',
+        )
+        + '</div>'
+    )
 
 
 def lesson_10(t):
