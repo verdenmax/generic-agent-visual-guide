@@ -474,7 +474,105 @@ def lesson_11(t):
 
 
 def lesson_12(t):
-    return f'<p class="lead">{t("本课内容正在编写中。", "This lesson is being written.")}</p>'
+    """记忆的读写与结晶 / Memory Read/Write & Crystallization."""
+    return (
+        '<p class="lead">'
+        + t(
+            '分好层只是“书架”，还得有人往上面记东西。GenericAgent 用<strong>两个记忆工具</strong>完成读写：'
+            '一个是任务进行中的“工作便签”，一个是任务收尾时的“长期记忆结算”。前者防遗忘，后者把经验<strong>结晶</strong>成技能。',
+            'Layering is just the "bookshelf"; something still has to write onto it. GenericAgent reads and writes '
+            'memory with <strong>two memory tools</strong>: a "working notepad" during a task, and a "long-term '
+            'memory settlement" when a task wraps up. The first prevents forgetting; the second '
+            '<strong>crystallizes</strong> experience into skills.',
+        )
+        + '</p>'
+
+        + '<div class="card macro"><div class="tag">🌍 '
+        + t('宏观理解', 'The Big Picture') + '</div>'
+        + '<p>'
+        + t(
+            '<strong>短期</strong>：<span class="inline">update_working_checkpoint</span> 把“用户要什么、关键约束”写进一个'
+            '便签，之后每轮自动注入，防止长任务跑着跑着把目标跑丢。<strong>长期</strong>：'
+            '<span class="inline">start_long_term_update</span> 在任务完成后启动“结算”，把<strong>经过行动验证</strong>的'
+            '环境事实/用户偏好/踩坑经验，最小化地写进 L1/L2/L3。',
+            '<strong>Short-term</strong>: <span class="inline">update_working_checkpoint</span> writes "what the user '
+            'wants and the key constraints" onto a notepad that is auto-injected every turn, so a long task does not '
+            'lose its goal along the way. <strong>Long-term</strong>: <span class="inline">start_long_term_update</span> '
+            'kicks off a "settlement" after a task, writing <strong>action-verified</strong> environment facts, user '
+            'preferences and hard-won lessons minimally into L1/L2/L3.',
+        )
+        + '</p></div>'
+
+        + '<h2>' + t('从干活到记住', 'From doing to remembering') + '</h2>'
+        + '<div class="flow">'
+        + '<div class="node"><div class="nt">' + t('开始任务', 'Start task') + '</div>'
+        + '<div class="nd">' + t('读 SOP', 'read SOP') + '</div></div>'
+        + '<div class="arrow">→</div>'
+        + '<div class="node hl"><div class="nt">update_working_checkpoint</div>'
+        + '<div class="nd">' + t('记住目标与约束', 'capture goal & constraints') + '</div></div>'
+        + '<div class="arrow">→</div>'
+        + '<div class="node"><div class="nt">' + t('执行 / 验证', 'execute / verify') + '</div>'
+        + '<div class="nd">' + t('每轮自动注入便签', 'notepad injected each turn') + '</div></div>'
+        + '<div class="arrow">→</div>'
+        + '<div class="node hl"><div class="nt">start_long_term_update</div>'
+        + '<div class="nd">' + t('结晶进 L1/L2/L3', 'crystallize into L1/L2/L3') + '</div></div>'
+        + '</div>'
+
+        + '<div class="card detail"><div class="tag">🔬 '
+        + t('源码对应', 'In the Source') + '</div>'
+        + '<ul>'
+        + '<li>' + t('短期便签：', 'Short-term notepad: ')
+        + '<span class="inline">ga.py: do_update_working_checkpoint</span>'
+        + t(' 把 key_info / related_sop 写进 self.working，再由“锚点提示”每轮回灌给模型。',
+            ' writes key_info / related_sop into self.working, then re-injects it via an "anchor prompt" each turn.') + '</li>'
+        + '<li>' + t('长期结算：', 'Long-term settlement: ')
+        + '<span class="inline">ga.py: do_start_long_term_update</span>'
+        + t(' 注入一段提炼提示词，引导用 file_patch 最小化更新 L2 事实、同步 L1 索引、必要时精简 L3 SOP。',
+            ' injects a distillation prompt that guides minimal file_patch updates to L2 facts, syncs the L1 index, '
+            'and trims an L3 SOP when needed.') + '</li>'
+        + '<li>' + t('结算受 L0 铁律约束：', 'Settlement obeys the L0 iron rules: ')
+        + '<span class="inline">memory/memory_management_sop.md</span>'
+        + t('——只记“行动验证成功”的信息，禁存易变状态，能不改就不 overwrite、宁愿少量 patch。',
+            ' — only record "action-verified" info, never store volatile state, avoid overwrite and prefer small '
+            'patches.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card analogy"><div class="tag">🧩 '
+        + t('生活类比', 'Analogy') + '</div>'
+        + t(
+            '像做实验时<strong>手边的草稿纸 + 事后的实验记录本</strong>：草稿纸（工作便签）随手记当前要点，做完一组就擦；'
+            '只有<strong>真正验证成功</strong>的结论，才郑重地誊进永久的记录本（长期记忆）。没验证过的猜测，绝不入册。',
+            'Like doing experiments with a <strong>scratch pad at hand plus a lab notebook afterward</strong>: the '
+            'scratch pad (working notepad) jots current points and gets wiped after each batch; only conclusions that '
+            'were <strong>actually verified</strong> are carefully transcribed into the permanent notebook (long-term '
+            'memory). Unverified guesses never make it in.',
+        )
+        + '</div>'
+
+        + '<div class="card key"><div class="tag">✅ '
+        + t('关键要点', 'Key Takeaways') + '</div><ul>'
+        + '<li>' + t('两个记忆工具：working_checkpoint（短期、每轮注入）与 start_long_term_update（长期结晶）。',
+            'Two memory tools: working_checkpoint (short-term, injected each turn) and start_long_term_update (long-term crystallization).') + '</li>'
+        + '<li>' + t('铁律：无行动，不记忆——只结晶经过验证的信息。',
+            'The iron rule: no execution, no memory — only crystallize verified information.') + '</li>'
+        + '<li>' + t('写记忆要最小化：优先小 patch，禁存易变状态。',
+            'Write memory minimally: prefer small patches, never store volatile state.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card spark"><div class="tag">💡 '
+        + t('设计亮点', 'Design Insight') + '</div>'
+        + t(
+            '“<strong>无行动，不记忆</strong>”这条铁律，是 GA 记忆可信的关键。模型的“固有知识”“推理猜测”一律不准当事实写入——'
+            '只有工具调用真正成功的结论才配结晶成技能。正是这条原则，把记忆库守成了“越用越准”而不是“越用越脏”，'
+            '也让后面“自进化”长出的技能树根基扎实、可被反复信任。',
+            'The iron rule "<strong>no execution, no memory</strong>" is what makes GA\'s memory trustworthy. A '
+            'model\'s "inherent knowledge" and "reasoning guesses" may never be written as facts — only conclusions '
+            'from genuinely successful tool calls deserve to crystallize into skills. This very principle keeps the '
+            'memory store "more accurate the more you use it" rather than "dirtier", giving the later "self-evolution" '
+            'skill tree a solid, repeatedly trustworthy foundation.',
+        )
+        + '</div>'
+    )
 
 
 def lesson_13(t):
