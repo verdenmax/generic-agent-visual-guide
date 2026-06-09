@@ -251,7 +251,111 @@ def lesson_09(t):
 
 
 def lesson_10(t):
-    return f'<p class="lead">{t("本课内容正在编写中。", "This lesson is being written.")}</p>'
+    """Handler 与工具调度 / Handler & Tool Dispatch."""
+    return (
+        '<p class="lead">'
+        + t(
+            '模型说“我要调 code_run”，这句话怎么变成真正跑起来的代码？答案是 '
+            '<span class="inline">agent_loop.py: BaseHandler.dispatch</span>：它按工具名找到对应的 '
+            '<span class="inline">do_&lt;tool&gt;</span> 方法、执行它、并把结果包成 StepOutcome 交回循环。',
+            'The model says "I want to call code_run" — how does that sentence become real running code? The '
+            'answer is <span class="inline">agent_loop.py: BaseHandler.dispatch</span>: it finds the matching '
+            '<span class="inline">do_&lt;tool&gt;</span> method by tool name, runs it, and wraps the result in a '
+            'StepOutcome handed back to the loop.',
+        )
+        + '</p>'
+
+        + '<div class="card macro"><div class="tag">🌍 '
+        + t('宏观理解', 'The Big Picture') + '</div>'
+        + '<p>'
+        + t(
+            '调度的规则简单到只有一句话：<strong>工具名 ', 'The dispatch rule is one sentence: <strong>tool name ')
+        + '<span class="mono">X</span>'
+        + t(' → 调用方法 ', ' → call the method ') + '<span class="mono">do_X</span></strong>'
+        + t('。所有工具都是 ', '. Every tool is a ')
+        + '<span class="inline">do_&lt;tool&gt;</span>'
+        + t(' 方法，集中在 ', ' method, gathered in ')
+        + '<span class="inline">ga.py: GenericAgentHandler</span>'
+        + t('（它继承自 BaseHandler）。想加一个新工具？再加一个 do_ 方法就行，循环一行都不用改。',
+            ' (which subclasses BaseHandler). Want a new tool? Add one more do_ method; the loop needs zero changes.',
+        )
+        + '</p></div>'
+
+        + '<div class="codefile"><div class="cf-head"><span class="dot"></span>'
+        + '<span class="path">agent_loop.py</span><span class="ln">BaseHandler.dispatch</span></div>'
+        + '<pre>'
+        + '<span class="kw">def</span> <span class="fn">dispatch</span>(self, tool_name, args, response, ...):\n'
+        + '    method_name = <span class="st">f"do_{tool_name}"</span>\n'
+        + '    <span class="kw">if</span> hasattr(self, method_name):\n'
+        + '        _hook(<span class="st">\'tool_before\'</span>, locals())\n'
+        + '        ret = <span class="kw">yield from</span> try_call_generator(getattr(self, method_name), args, response)\n'
+        + '        _hook(<span class="st">\'tool_after\'</span>, locals())\n'
+        + '        <span class="kw">return</span> ret  <span class="cm"># ' + t('一个 StepOutcome', 'a StepOutcome') + '</span>\n'
+        + '    <span class="kw">else</span>:\n'
+        + '        <span class="kw">yield</span> <span class="st">f"' + t('未知工具', 'unknown tool') + ': {tool_name}\\n"</span>\n'
+        + '        <span class="kw">return</span> StepOutcome(<span class="nb">None</span>, next_prompt=...)\n'
+        + '</pre></div>'
+
+        + '<div class="card detail"><div class="tag">🔬 '
+        + t('源码对应', 'In the Source') + '</div>'
+        + '<ul>'
+        + '<li>' + t('每个 do_ 方法都是<strong>生成器</strong>：用 ', 'Each do_ method is a <strong>generator</strong>: it ')
+        + '<span class="inline">yield</span>'
+        + t(' 实时吐出给用户看的过程，再 ', 's process output for the user in real time, then ')
+        + '<span class="inline">return</span>'
+        + t(' 一个 StepOutcome 作为结构化结果。',
+            's a StepOutcome as the structured result.') + '</li>'
+        + '<li>' + t('辅助函数 ', 'The helper ')
+        + '<span class="inline">try_call_generator</span>'
+        + t(' 同时兼容“普通返回”和“生成器”两种写法，让 do_ 方法可繁可简。',
+            ' supports both "plain return" and "generator" styles, so do_ methods can be simple or rich.') + '</li>'
+        + '<li>' + t('调度内置两个钩子点 ', 'Dispatch has two built-in hook points, ')
+        + '<span class="inline">tool_before</span>' + t(' / ', ' / ')
+        + '<span class="inline">tool_after</span>'
+        + t('（详见“钩子与可观测性”一课）；未知工具与 bad_json 也在这里兜底处理。',
+            ' (see the "Hooks & Observability" lesson); unknown tools and bad_json are also handled here.') + '</li>'
+        + '<li>' + t('每轮收尾还会调用 ', 'At the end of each turn it also calls ')
+        + '<span class="inline">turn_end_callback</span>'
+        + t('，把本轮的 response、工具结果与 next_prompt 串起来。',
+            ', stitching this turn\'s response, tool results and next_prompt together.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card analogy"><div class="tag">🧩 '
+        + t('生活类比', 'Analogy') + '</div>'
+        + t(
+            '像公司前台的<strong>总机转接</strong>：你报一个部门名（工具名），总机就把电话接到对应分机（do_ 方法）。'
+            '前台不需要懂每个部门怎么干活，只要知道“名字 → 分机”的对应关系；新开一个部门，只要登记一个新分机号即可。',
+            'Like a company switchboard <strong>routing a call</strong>: you say a department name (the tool name) '
+            'and the operator connects you to the right extension (the do_ method). The operator need not know how '
+            'each department works, only the "name → extension" mapping; opening a new department just means '
+            'registering one new extension.',
+        )
+        + '</div>'
+
+        + '<div class="card key"><div class="tag">✅ '
+        + t('关键要点', 'Key Takeaways') + '</div><ul>'
+        + '<li>' + t('调度规则：工具名 X → 方法 do_X，集中在 GenericAgentHandler。',
+            'Dispatch rule: tool name X → method do_X, gathered in GenericAgentHandler.') + '</li>'
+        + '<li>' + t('do_ 方法是生成器：yield 过程输出，return 一个 StepOutcome。',
+            'do_ methods are generators: yield process output, return a StepOutcome.') + '</li>'
+        + '<li>' + t('加工具 = 加一个 do_ 方法；循环与调度无需改动。',
+            'Adding a tool = adding a do_ method; the loop and dispatch stay untouched.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card spark"><div class="tag">💡 '
+        + t('设计亮点', 'Design Insight') + '</div>'
+        + t(
+            '“工具即生成器”是这里最优雅的一招：同一个方法既能<strong>流式展示</strong>执行过程，又能<strong>结构化返回</strong>最终结果，'
+            '两件事一次写完。再配上 <span class="inline">f"do_{tool_name}"</span> 的约定式调度，整套工具系统对扩展<strong>开放</strong>、对核心<strong>封闭</strong>——'
+            '这正是 GA 能从 9 个工具不断长出新能力的结构基础。',
+            '"A tool is a generator" is the most elegant move here: one method both <strong>streams</strong> its '
+            'progress and <strong>returns a structured</strong> result — both written at once. Combined with the '
+            'convention-based <span class="inline">f"do_{tool_name}"</span> dispatch, the whole tool system is '
+            '<strong>open</strong> to extension and <strong>closed</strong> at the core — the structural basis for '
+            'GA growing new abilities from just 9 tools.',
+        )
+        + '</div>'
+    )
 
 
 def lesson_11(t):
