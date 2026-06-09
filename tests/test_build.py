@@ -99,9 +99,16 @@ class TestBuildPipeline(unittest.TestCase):
 
     def test_stub_render_through_pipeline(self):
         # Verifies a still-stub lesson renders both i18n passes end-to-end
-        # through the build pipeline. Lessons 01-03 now carry real content, so
-        # this targets a remaining stub page (04-install.html).
-        with open(os.path.join(ROOT, "lessons", "04-install.html"), encoding="utf-8") as f:
+        # through the build pipeline. As lessons gain real content this picks
+        # any REMAINING stub dynamically; once all 23 are written it skips.
+        stub_fname = next(
+            (p.fname for p in shell.PAGES
+             if EN_PLACEHOLDER in registry.CONTENT[p.fname](i18n.t_en)),
+            None,
+        )
+        if stub_fname is None:
+            self.skipTest("no stub lessons remain")
+        with open(os.path.join(ROOT, "lessons", stub_fname), encoding="utf-8") as f:
             html = f.read()
         zh = html.split('<div class="zh">', 1)[1].split('<div class="en">', 1)[0]
         en = html.split('<div class="en">', 1)[1]
