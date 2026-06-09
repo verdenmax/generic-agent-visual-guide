@@ -6,6 +6,9 @@ the lesson that covers them (sibling .html files; links validated by
 check_links). ``t('中文', 'English')`` wraps every piece of prose.
 """
 
+import components as c
+
+
 
 def _term(t, term, zh, en, href, lesson_label):
     """One glossary row: term · bilingual one-liner · link to its lesson."""
@@ -27,6 +30,27 @@ def lesson_23(t):
             'the earlier lessons, this page is your <strong>quick-reference</strong> index.',
         )
         + '</p>'
+
+        + '<h2>' + t('学习路径 / Reading paths', 'Reading paths') + '</h2>'
+        + '<div class="cols">'
+        + '<div class="col"><h4>' + t('🚀 快速上手', '🚀 Get going') + '</h4><p>'
+        + t('只想先用起来：', 'Just want to use it: ')
+        + '<a href="01-what-is-ga.html">01</a> → <a href="04-install.html">04</a> → '
+        + '<a href="05-frontends.html">05</a> → <a href="06-commands.html">06</a> → '
+        + '<a href="07-tools.html">07</a></p></div>'
+        + '<div class="col"><h4>' + t('🔬 懂原理', '🔬 Understand internals') + '</h4><p>'
+        + t('想读懂源码：', 'Want to read the source: ')
+        + '<a href="08-agent-loop.html">08</a> → <a href="09-llmcore.html">09</a> → '
+        + '<a href="10-handler-dispatch.html">10</a> → <a href="11-layered-memory.html">11</a> → '
+        + '<a href="12-memory-crystallize.html">12</a> → <a href="13-hooks-observability.html">13</a> → '
+        + '<a href="14-context-tokens.html">14</a></p></div>'
+        + '<div class="col"><h4>' + t('🧬 进阶玩法', '🧬 Go further') + '</h4><p>'
+        + t('想玩到底：', 'Want the deep end: ')
+        + '<a href="15-vision.html">15</a> → <a href="16-input-mobile.html">16</a> → '
+        + '<a href="17-browser.html">17</a> → <a href="18-reflect-orchestration.html">18</a> → '
+        + '<a href="19-autonomy.html">19</a> → <a href="20-self-evolution.html">20</a> → '
+        + '<a href="21-build-a-skill.html">21</a> → <a href="22-extend-frontend.html">22</a></p></div>'
+        + '</div>'
 
         + '<h2>' + t('术语表', 'Glossary') + '</h2>'
 
@@ -155,6 +179,41 @@ def lesson_23(t):
             'The UIs and IM bots, plus the conductor orchestrator.')
         + '</td><td><a href="05-frontends.html">05</a> · <a href="22-extend-frontend.html">22</a></td></tr>'
         + '</table>'
+
+        + '<h2>' + t('常见疑问 / FAQ', 'FAQ') + '</h2>'
+        + c.accordion(t, 1, '为什么核心只有 ~3K 行也能这么强？',
+            'How can a ~3K-line core be this capable?',
+            c.qa(t, '一句话', 'In one line',
+                 '<p>' + t(
+                     '复杂度被外包了：推理交给大模型，扩展交给 <span class="inline">code_run</span>（运行时写代码），'
+                     '经验交给分层记忆。框架只提供“循环 + 9 工具 + 记忆”的最小骨架。详见 ',
+                     'Complexity is outsourced: reasoning to the LLM, extension to <span class="inline">code_run</span> '
+                     '(writing code at runtime), experience to layered memory. The framework only provides a minimal '
+                     '"loop + 9 tools + memory" skeleton. See ')
+                 + '<a href="01-what-is-ga.html">' + t('第 1 课', 'lesson 01') + '</a> '
+                 + t('与', 'and') + ' <a href="20-self-evolution.html">' + t('第 20 课', 'lesson 20') + '</a>。</p>'))
+        + c.accordion(t, 2, '它支持哪些大模型？',
+            'Which LLMs does it support?',
+            c.qa(t, '两种协议', 'Two protocols',
+                 '<p>' + t(
+                     'GA 原生支持 <strong>OpenAI 兼容</strong>接口与 <strong>Anthropic Claude 原生</strong>接口，'
+                     '因此 GPT / Claude / Kimi / MiniMax / DeepSeek / GLM / Qwen / Gemini 等都能在 '
+                     '<span class="inline">mykey.py</span> 里配置。连不支持函数调用的模型，也能用文本协议调工具（见 ',
+                     'GA natively speaks the <strong>OpenAI-compatible</strong> and <strong>Anthropic Claude native</strong> '
+                     'protocols, so GPT / Claude / Kimi / MiniMax / DeepSeek / GLM / Qwen / Gemini and more can be configured '
+                     'in <span class="inline">mykey.py</span>. Even models without function calling can use tools via the '
+                     'text protocol (see ')
+                 + '<a href="09-llmcore.html">' + t('第 9 课', 'lesson 09') + '</a>）。</p>'))
+        + c.accordion(t, 3, '记忆会不会越记越乱？',
+            'Won\'t memory get messier over time?',
+            c.qa(t, '靠铁律守住', 'Guarded by iron rules',
+                 '<p>' + t(
+                     '不会。L0 铁律规定“<strong>无行动，不记忆</strong>”——只有经工具调用验证成功的结论才允许写入；'
+                     '并禁止存易变状态、要求最小化 patch。所以记忆库是“越用越准”而非“越用越脏”。详见 ',
+                     'No. The L0 rules state "<strong>no execution, no memory</strong>" — only conclusions verified by a '
+                     'successful tool call may be written; volatile state is banned and patches must be minimal. So the '
+                     'store gets "more accurate", not "dirtier". See ')
+                 + '<a href="12-memory-crystallize.html">' + t('第 12 课', 'lesson 12') + '</a>。</p>'))
 
         + '<div class="card key"><div class="tag">🏁 '
         + t('读完了', 'You made it') + '</div>'
