@@ -303,7 +303,104 @@ def lesson_17(t):
 
 
 def lesson_18(t):
-    return f'<p class="lead">{t("本课内容正在编写中。", "This lesson is being written.")}</p>'
+    """反思与编排 / Reflection & Orchestration."""
+    return (
+        '<p class="lead">'
+        + t(
+            '前面的循环是“你说一句、它做一段”。但要让 Agent <strong>自己持续推进</strong>、按目标自驱、甚至多个 worker 协作，'
+            '就需要一层<strong>反思（reflect）</strong>机制：在循环之外，定时“探一探、推一把”。',
+            'The loop so far is "you say something, it does a chunk". But to make the agent <strong>keep going on its '
+            'own</strong>, self-drive toward a goal, or even have multiple workers collaborate, you need a layer of '
+            '<strong>reflection</strong>: outside the loop, periodically "check and nudge".',
+        )
+        + '</p>'
+
+        + '<div class="card macro"><div class="tag">🌍 '
+        + t('宏观理解', 'The Big Picture') + '</div>'
+        + '<p>'
+        + t(
+            'reflect/ 下的每个模块都是一个<strong>可插拔的定时探针</strong>：它有自己的检查间隔，每隔一段时间运行 '
+            '<span class="inline">check()</span>——如果发现“该干活了”，就<strong>返回一段提示词去唤醒 Agent</strong>，'
+            '否则返回 None 保持安静。不同模块对应不同的编排玩法。',
+            'Each module under reflect/ is a <strong>pluggable periodic probe</strong>: it has its own check interval and '
+            'runs <span class="inline">check()</span> every so often — if it finds "time to act", it <strong>returns a '
+            'prompt that wakes the agent</strong>, otherwise it returns None and stays quiet. Different modules map to '
+            'different orchestration styles.',
+        )
+        + '</p></div>'
+
+        + '<h2>' + t('几种编排模块', 'A few orchestration modules') + '</h2>'
+        + '<table class="t">'
+        + '<tr><th>' + t('模块', 'Module') + '</th><th>' + t('玩法', 'Style') + '</th></tr>'
+        + '<tr><td class="mono">goal_mode.py</td><td>'
+        + t('目标模式：按一份 state 持续自驱，直到预算耗尽。',
+            'Goal mode: keep self-driving from a state file until the budget runs out.') + '</td></tr>'
+        + '<tr><td class="mono">scheduler.py</td><td>'
+        + t('调度器：类 cron 的定时任务（带端口锁防重复启动）。',
+            'Scheduler: cron-like timed tasks (with a port lock to prevent double-start).') + '</td></tr>'
+        + '<tr><td class="mono">checklist_master.py</td><td>'
+        + t('清单主控：轮询一个清单/看板，逐项推进。',
+            'Checklist master: poll a checklist/board and advance items one by one.') + '</td></tr>'
+        + '<tr><td class="mono">agent_team_worker.py</td><td>'
+        + t('团队 worker：从共享 BBS 接单，多 Agent 协作。',
+            'Team worker: pick up jobs from a shared BBS for multi-agent collaboration.') + '</td></tr>'
+        + '</table>'
+
+        + '<div class="card detail"><div class="tag">🔬 '
+        + t('源码对应', 'In the Source') + '</div>'
+        + '<ul>'
+        + '<li>' + t('反思模块由 ', 'Reflection modules are launched by ')
+        + '<span class="inline">agentmain.py --reflect reflect/&lt;module&gt;.py</span>'
+        + t(' 启动；每个模块约定有 INTERVAL、init(a)、check() 三样东西。',
+            '; each module conventionally has INTERVAL, init(a) and check().') + '</li>'
+        + '<li>' + t('check() 的返回值就是“唤醒提示”：',
+            'The return value of check() is the "wake prompt": ')
+        + t('返回字符串 → 注入并唤醒 Agent；返回 None → 本次跳过。',
+            'return a string → inject and wake the agent; return None → skip this round.') + '</li>'
+        + '<li>' + t('goal_mode 读 ', 'goal_mode reads ')
+        + '<span class="inline">GOAL_STATE</span>'
+        + t(' 指定的 state json；scheduler 用一个端口锁（127.0.0.1:45762）防止重复启动；agent_team_worker 预检 BBS（见 assets/agent_bbs.py）。',
+            ' a state json pointed to by GOAL_STATE; scheduler uses a port lock (127.0.0.1:45762) to prevent '
+            'double-start; agent_team_worker pre-checks a BBS (see assets/agent_bbs.py).') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card analogy"><div class="tag">🧩 '
+        + t('生活类比', 'Analogy') + '</div>'
+        + t(
+            '像给一个埋头干活的工人配了几位<strong>不同的工头</strong>：目标工头盯着“这件事没做完就别停”，'
+            '排班工头按点喊“到时间了，去做那件事”，看板工头盯着任务清单逐条派活，接单工头则去公告栏揽活。'
+            '工人（Agent 循环）还是那个工人，是工头们决定了他<strong>何时、为何</strong>再次动起来。',
+            'Like giving a heads-down worker several <strong>different foremen</strong>: the goal foreman insists "do '
+            'not stop until this is done", the scheduling foreman calls "it is time, go do that", the board foreman '
+            'assigns items off a checklist, and the job-board foreman picks up postings. The worker (the agent loop) is '
+            'the same worker; the foremen decide <strong>when and why</strong> he starts moving again.',
+        )
+        + '</div>'
+
+        + '<div class="card key"><div class="tag">✅ '
+        + t('关键要点', 'Key Takeaways') + '</div><ul>'
+        + '<li>' + t('reflect/ 模块是循环之外的定时探针，用 check() 决定是否唤醒 Agent。',
+            'reflect/ modules are periodic probes outside the loop; check() decides whether to wake the agent.') + '</li>'
+        + '<li>' + t('四种玩法：目标自驱、定时调度、清单主控、团队接单。',
+            'Four styles: goal self-drive, timed scheduling, checklist master, team job-board.') + '</li>'
+        + '<li>' + t('用 agentmain.py --reflect 启动；约定 INTERVAL / init / check。',
+            'Launched via agentmain.py --reflect; the convention is INTERVAL / init / check.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card spark"><div class="tag">💡 '
+        + t('设计亮点', 'Design Insight') + '</div>'
+        + t(
+            '编排没有被塞进核心循环，而是抽成一层<strong>统一约定的探针</strong>：所有花样——自驱、定时、看板、协作——都被归一成同一个问题'
+            '“<span class="inline">check() 这次要不要唤醒、用什么提示唤醒</span>”。于是“加一种新编排”=“写一个新 reflect 模块”，'
+            '内核依旧是那 100 行。复杂的多 Agent 行为，由简单的探针<strong>组合</strong>而成。',
+            'Orchestration is not stuffed into the core loop but abstracted into a layer of <strong>uniformly-agreed '
+            'probes</strong>: every style — self-drive, scheduling, boards, collaboration — reduces to the same question, '
+            '"<span class="inline">should check() wake it this time, and with what prompt</span>". So "add a new '
+            'orchestration" = "write a new reflect module", while the core stays 100 lines. Complex multi-agent behavior '
+            'is <strong>composed</strong> from simple probes.',
+        )
+        + '</div>'
+    )
 
 
 def lesson_19(t):
