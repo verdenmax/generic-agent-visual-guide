@@ -110,7 +110,97 @@ def lesson_15(t):
 
 
 def lesson_16(t):
-    return f'<p class="lead">{t("本课内容正在编写中。", "This lesson is being written.")}</p>'
+    """输入与移动端 / Input & Mobile (ADB)."""
+    return (
+        '<p class="lead">'
+        + t(
+            '上一课让 Agent “看见”，这一课让它“动手”：在电脑上<strong>控制鼠标键盘</strong>，在手机上<strong>通过 '
+            'ADB 驱动安卓</strong>。看得见、点得到，GA 对设备的控制闭环才算合上。',
+            'The last lesson let the agent "see"; this one lets it "act": on a computer it <strong>controls the '
+            'mouse and keyboard</strong>, and on a phone it <strong>drives Android over ADB</strong>. Seeing plus '
+            'touching closes GA\'s control loop over a device.',
+        )
+        + '</p>'
+
+        + '<div class="card macro"><div class="tag">🌍 '
+        + t('宏观理解', 'The Big Picture') + '</div>'
+        + '<p>'
+        + t(
+            '两条“手”的通路：在桌面端，<span class="inline">ljqCtrl</span> 直接调 Win32 API 移动鼠标、点击、敲键；'
+            '在移动端，<span class="inline">adb_ui</span> 用 ADB / uiautomator2 把安卓界面 dump 出来再操作。'
+            '它们都和上一课的视觉配合——视觉给坐标，输入去执行。',
+            'Two "hand" paths: on the desktop, <span class="inline">ljqCtrl</span> calls Win32 APIs directly to move '
+            'the mouse, click and type; on mobile, <span class="inline">adb_ui</span> uses ADB / uiautomator2 to dump '
+            'and drive the Android UI. Both pair with the previous lesson\'s vision — vision gives coordinates, input '
+            'carries them out.',
+        )
+        + '</p></div>'
+
+        + '<h2>' + t('两条输入通路', 'Two input paths') + '</h2>'
+        + '<div class="cols">'
+        + '<div class="col"><h4>' + t('桌面：鼠标键盘', 'Desktop: mouse & keyboard') + '</h4><p>'
+        + t('ljqCtrl 用 Click(x,y)、SetCursorPos、Press("ctrl+v") 等操作，全程<strong>物理坐标</strong>，并提供 DPI 安全的窗口截图。',
+            'ljqCtrl uses Click(x,y), SetCursorPos, Press("ctrl+v") and more, all in <strong>physical '
+            'coordinates</strong>, plus DPI-safe window capture.') + '</p></div>'
+        + '<div class="col"><h4>' + t('移动：ADB 安卓', 'Mobile: ADB Android') + '</h4><p>'
+        + t('adb_ui 优先用 uiautomator2 dump 界面层级（动画密集的 App 更稳），原生 adb 兜底，必要时配合视觉补盲。',
+            'adb_ui prefers uiautomator2 to dump the UI hierarchy (steadier for animation-heavy apps), with native '
+            'adb as fallback, aided by vision when needed.') + '</p></div>'
+        + '</div>'
+
+        + '<div class="card detail"><div class="tag">🔬 '
+        + t('源码对应', 'In the Source') + '</div>'
+        + '<ul>'
+        + '<li>' + t('桌面输入在 ', 'Desktop input is in ')
+        + '<span class="inline">memory/ljqCtrl.py</span>'
+        + t('（Click / SetCursorPos / Press / FindBlock / GrabWindow，基于 win32api）；要点见 ',
+            ' (Click / SetCursorPos / Press / FindBlock / GrabWindow, on win32api); the playbook is ')
+        + '<span class="inline">memory/ljqCtrl_sop.md</span>' + t('。', '.') + '</li>'
+        + '<li>' + t('一条硬规矩：<strong>始终用物理坐标</strong>，且严禁 import pyautogui（会污染 win32api）。',
+            'A hard rule: <strong>always use physical coordinates</strong>, and never import pyautogui (it pollutes '
+            'win32api).') + '</li>'
+        + '<li>' + t('安卓控制在 ', 'Android control is in ')
+        + '<span class="inline">memory/adb_ui.py</span>'
+        + t('（u2 优先、原生 adb fallback，dump 配合 ui_detect 补盲）；背景见 ',
+            ' (u2 first, native adb fallback, dump combined with ui_detect to fill gaps); background in ')
+        + '<span class="inline">memory/computer_use.md</span>' + t('。', '.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card analogy"><div class="tag">🧩 '
+        + t('生活类比', 'Analogy') + '</div>'
+        + t(
+            '如果说视觉是“眼睛”，这一课就是“<strong>手</strong>”：电脑上的手是鼠标和键盘，手机上的手是隔空操作的遥控器（ADB）。'
+            '眼睛找到“发送按钮在哪”，手负责真的把它按下去——缺一不可。',
+            'If vision is the "eyes", this lesson is the "<strong>hands</strong>": on a computer the hand is the mouse '
+            'and keyboard; on a phone it is a remote control acting at a distance (ADB). The eyes find "where the Send '
+            'button is", the hands actually press it — neither works alone.',
+        )
+        + '</div>'
+
+        + '<div class="card key"><div class="tag">✅ '
+        + t('关键要点', 'Key Takeaways') + '</div><ul>'
+        + '<li>' + t('桌面用 ljqCtrl（win32api）做鼠标键盘；移动用 adb_ui（u2/adb）控安卓。',
+            'Desktop uses ljqCtrl (win32api) for mouse/keyboard; mobile uses adb_ui (u2/adb) to drive Android.') + '</li>'
+        + '<li>' + t('始终物理坐标；桌面端严禁 import pyautogui。',
+            'Always physical coordinates; never import pyautogui on the desktop.') + '</li>'
+        + '<li>' + t('输入与视觉配合：视觉给坐标，输入去点击/敲键。',
+            'Input pairs with vision: vision gives coordinates, input clicks/types.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card spark"><div class="tag">💡 '
+        + t('设计亮点', 'Design Insight') + '</div>'
+        + t(
+            '把“手”做成<strong>最底层、最通用</strong>的能力，是 GA 强执行力的根。它不依赖某个 App 开放接口，而是回到人类操作设备的'
+            '<strong>最小公分母</strong>——点、敲、滑。于是“订杯奶茶”“群发微信”“驱动支付宝”这些任务，本质上都被还原成了'
+            '“看一眼 + 点几下”，用同一套手在真实设备上完成。',
+            'Making the "hands" the <strong>lowest-level, most general</strong> capability is the root of GA\'s strong '
+            'execution. It does not depend on any app exposing an API; it falls back to the <strong>lowest common '
+            'denominator</strong> of how humans operate devices — tap, type, swipe. So tasks like "order a milk tea", '
+            '"mass-send WeChat", "drive Alipay" all reduce to "glance + a few taps", done by the same hands on real '
+            'devices.',
+        )
+        + '</div>'
+    )
 
 
 def lesson_17(t):
