@@ -204,7 +204,102 @@ def lesson_16(t):
 
 
 def lesson_17(t):
-    return f'<p class="lead">{t("本课内容正在编写中。", "This lesson is being written.")}</p>'
+    """浏览器注入与 Web 工具 / Browser Injection & Web Tools."""
+    return (
+        '<p class="lead">'
+        + t(
+            'GenericAgent 操作网页有个杀手锏：它注入你<strong>真实的浏览器</strong>，而不是另起一个干净的无头浏览器。'
+            '这意味着你的登录态、Cookie、插件全都在——它看到的就是你看到的那个已登录页面。',
+            'GenericAgent has a killer feature for the web: it injects into your <strong>real browser</strong> rather '
+            'than spinning up a clean headless one. That means your login state, cookies and extensions are all there '
+            '— it sees the very logged-in page you see.',
+        )
+        + '</p>'
+
+        + '<div class="card macro"><div class="tag">🌍 '
+        + t('宏观理解', 'The Big Picture') + '</div>'
+        + '<p>'
+        + t(
+            '网页能力只有两个工具：<span class="inline">web_scan</span>（看：拿到一份<strong>简化后</strong>的页面与标签页列表）'
+            '和 <span class="inline">web_execute_js</span>（做：在页面里执行 JS）。背后由一个 WebSocket 桥把命令送进真实浏览器，'
+            '页面则先被<strong>大幅简化</strong>再交给模型，省 token。',
+            'There are only two web tools: <span class="inline">web_scan</span> (look: get a <strong>simplified</strong> '
+            'page plus the tab list) and <span class="inline">web_execute_js</span> (do: run JS in the page). Behind '
+            'them a WebSocket bridge delivers commands into the real browser, and the page is <strong>heavily '
+            'simplified</strong> before reaching the model to save tokens.',
+        )
+        + '</p></div>'
+
+        + '<div class="codefile"><div class="cf-head"><span class="dot"></span>'
+        + '<span class="path">ga.py</span><span class="ln">web tools → simphtml</span></div>'
+        + '<pre>'
+        + '<span class="kw">import</span> simphtml\n'
+        + '<span class="kw">from</span> TMWebDriver <span class="kw">import</span> TMWebDriver\n'
+        + 'driver = TMWebDriver()  <span class="cm"># ' + t('连真实浏览器的 WS 桥', 'WS bridge to the real browser') + '</span>\n'
+        + '\n'
+        + '<span class="cm"># web_scan ' + t('看页面', 'look at the page') + '</span>\n'
+        + 'content = simphtml.get_html(driver, cutlist=<span class="nb">True</span>, maxchars=<span class="nb">35000</span>)\n'
+        + '\n'
+        + '<span class="cm"># web_execute_js ' + t('操作页面', 'act on the page') + '</span>\n'
+        + 'result = simphtml.execute_js_rich(script, driver)\n'
+        + '</pre></div>'
+
+        + '<div class="card detail"><div class="tag">🔬 '
+        + t('源码对应', 'In the Source') + '</div>'
+        + '<ul>'
+        + '<li>' + t('注入桥是 ', 'The injection bridge is ')
+        + '<span class="inline">TMWebDriver.py</span>'
+        + t('：它跑一个 WebSocket 服务，浏览器侧的客户端连回来，从而在<strong>真实浏览器</strong>里执行 JS、保留登录态。',
+            ': it runs a WebSocket server that a browser-side client connects back to, executing JS in the '
+            '<strong>real browser</strong> and preserving the login session.') + '</li>'
+        + '<li>' + t('页面简化是 ', 'Page simplification is ')
+        + '<span class="inline">simphtml.py</span>'
+        + t('：get_html 把 DOM 压到约 35000 字、去掉隐藏/浮动/被遮挡元素；execute_js_rich 执行 JS 并回收结果。',
+            ': get_html shrinks the DOM to ~35000 chars and drops hidden/floating/covered elements; execute_js_rich '
+            'runs JS and collects the result.') + '</li>'
+        + '<li>' + t('两个工具的封装在 ', 'The two tools are wrapped in ')
+        + '<span class="inline">ga.py: do_web_scan / do_web_execute_js</span>'
+        + t('；上手与配置见 ', '; setup and usage in ')
+        + '<span class="inline">memory/tmwebdriver_sop.md</span>' + t(' 与 ', ' and ')
+        + '<span class="inline">memory/web_setup_sop.md</span>' + t('。', '.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card analogy"><div class="tag">🧩 '
+        + t('生活类比', 'Analogy') + '</div>'
+        + t(
+            '别的框架像派来一个<strong>陌生的隐身访客</strong>：每次都开一个全新、没登录的浏览器，进站还得重新登录、过验证。'
+            'GA 则像在你<strong>自己已经登录好的浏览器</strong>里多了一只“隔空操作的手”——你已经登进去的网站，它直接就能用。',
+            'Other frameworks are like sending a <strong>stranger in incognito</strong>: every time a brand-new, '
+            'logged-out browser opens and must re-login and pass checks. GA is more like an extra "remote hand" inside '
+            '<strong>your own already-logged-in browser</strong> — the sites you are already signed into, it can use '
+            'right away.',
+        )
+        + '</div>'
+
+        + '<div class="card key"><div class="tag">✅ '
+        + t('关键要点', 'Key Takeaways') + '</div><ul>'
+        + '<li>' + t('两个工具：web_scan（看简化页面）与 web_execute_js（执行 JS）。',
+            'Two tools: web_scan (read a simplified page) and web_execute_js (run JS).') + '</li>'
+        + '<li>' + t('TMWebDriver 用 WebSocket 注入真实浏览器，保留登录态。',
+            'TMWebDriver injects the real browser over WebSocket, preserving the login session.') + '</li>'
+        + '<li>' + t('simphtml 把页面压到约 35K 字，省 token；多用 execute_js，少全量 scan。',
+            'simphtml shrinks the page to ~35K chars to save tokens; prefer execute_js, scan sparingly.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card spark"><div class="tag">💡 '
+        + t('设计亮点', 'Design Insight') + '</div>'
+        + t(
+            '“注入真实浏览器”这一个选择，绕开了无数自动化的老大难：免登录、免验证码、和你看到的页面完全一致。再叠加 simphtml 的'
+            '<strong>页面简化</strong>，把动辄上百 KB 的 DOM 压成几十 KB——既看得见，又看得起。这正是第 14 课“token 效率”在网页场景的延伸：'
+            '<strong>用真实环境换可靠，用简化换便宜</strong>。',
+            'The single choice to "inject the real browser" sidesteps countless automation headaches: no re-login, no '
+            'captchas, and a page identical to what you see. Layered with simphtml\'s <strong>page simplification</strong>, '
+            'a DOM of hundreds of KB shrinks to tens of KB — visible and affordable at once. This extends lesson 14\'s '
+            '"token efficiency" to the web: <strong>trade the real environment for reliability, and simplification for '
+            'cost</strong>.',
+        )
+        + '</div>'
+    )
 
 
 def lesson_18(t):
