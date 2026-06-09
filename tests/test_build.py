@@ -138,6 +138,7 @@ class TestBuildPipeline(unittest.TestCase):
     # lesson is thickened; keeps the suite green between per-lesson commits
     # while enforcing the depth contract on completed lessons.
     DEEPENED = {'01-what-is-ga.html', '02-project-map.html', '03-task-lifecycle.html',
+                '04-install.html', '05-frontends.html', '06-commands.html', '07-tools.html',
                 '20-self-evolution.html', '21-build-a-skill.html', '22-extend-frontend.html'}
 
     def test_deepened_lessons_have_accordions(self):
