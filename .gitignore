@@ -16,3 +16,6 @@ Thumbs.db
 *.pdf
 print-*.html
 _site/
+
+# pytest
+.pytest_cache/
