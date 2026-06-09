@@ -139,6 +139,9 @@ class TestBuildPipeline(unittest.TestCase):
     # while enforcing the depth contract on completed lessons.
     DEEPENED = {'01-what-is-ga.html', '02-project-map.html', '03-task-lifecycle.html',
                 '04-install.html', '05-frontends.html', '06-commands.html', '07-tools.html',
+                '08-agent-loop.html', '09-llmcore.html', '10-handler-dispatch.html',
+                '11-layered-memory.html', '12-memory-crystallize.html',
+                '13-hooks-observability.html', '14-context-tokens.html',
                 '15-vision.html', '16-input-mobile.html', '17-browser.html',
                 '18-reflect-orchestration.html', '19-autonomy.html',
                 '20-self-evolution.html', '21-build-a-skill.html', '22-extend-frontend.html'}
