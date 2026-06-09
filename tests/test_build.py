@@ -117,10 +117,15 @@ class TestBuildPipeline(unittest.TestCase):
 
 
     def test_completed_lessons_follow_card_format(self):
-        # Validates the 5-card template for every COMPLETED lesson and
-        # auto-skips stubs, so it scales to all 23 lessons with no future edits.
+        # Validates the 5-card template for every COMPLETED tutorial lesson and
+        # auto-skips stubs, so it scales to all lessons with no future edits.
+        # The glossary (23) is a reference/index page, not a 5-card tutorial,
+        # so it is intentionally exempt.
         required = ['card macro', 'card detail', 'card analogy', 'card key', 'card spark']
+        EXEMPT = {'23-glossary.html'}
         for fname, fn in registry.CONTENT.items():
+            if fname in EXEMPT:
+                continue
             en = fn(i18n.t_en)
             if EN_PLACEHOLDER in en:
                 continue  # still a stub; skip
