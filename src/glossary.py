@@ -31,7 +31,7 @@ def lesson_24(t):
         )
         + '</p>'
 
-        + '<h2>' + t('学习路径 / Reading paths', 'Reading paths') + '</h2>'
+        + '<h2>' + t('学习路径', 'Reading paths') + '</h2>'
         + '<div class="cols">'
         + '<div class="col"><h3>' + t('🚀 快速上手', '🚀 Get going') + '</h3><p>'
         + t('只想先用起来：', 'Just want to use it: ')
@@ -180,7 +180,7 @@ def lesson_24(t):
         + '</td><td><a href="05-frontends.html">05</a> · <a href="22-extend-frontend.html">22</a></td></tr>'
         + '</table>'
 
-        + '<h2>' + t('常见疑问 / FAQ', 'FAQ') + '</h2>'
+        + '<h2>' + t('常见疑问', 'FAQ') + '</h2>'
         + c.accordion(t, 1, '为什么核心只有 ~3K 行也能这么强？',
             'How can a ~3K-line core be this capable?',
             c.qa(t, '一句话', 'In one line',

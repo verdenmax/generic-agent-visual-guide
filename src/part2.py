@@ -798,13 +798,13 @@ def lesson_07(t):
             + c.qa(t, '⚙️ do_code_run 内部', 'Inside do_code_run',
                    '<p>' + t(
                        '<span class="inline">ga.py: do_code_run</span> 先取 '
-                       '<span class="inline">args["script"]</span>，没有就用 '
+                       '<span class="inline">args["code"] or args["script"]</span>，没有就用 '
                        '<span class="inline">_extract_code_block(response)</span> 从回复里抠代码块；'
                        '默认 <span class="mono">timeout=60</span>、类型 python。输出有长度上限 '
                        '<span class="mono">maxlen = 10000 // _tool_num</span>（按本轮工具数均分），'
                        '所以 schema 才强调“No hardcoding bulk data”——大数据要落文件读，别塞进代码。',
                        '<span class="inline">ga.py: do_code_run</span> first reads '
-                       '<span class="inline">args["script"]</span>, else extracts a code block from the reply via '
+                       '<span class="inline">args["code"] or args["script"]</span>, else extracts a code block from the reply via '
                        '<span class="inline">_extract_code_block(response)</span>; defaults to '
                        '<span class="mono">timeout=60</span>, type python. Output is capped at '
                        '<span class="mono">maxlen = 10000 // _tool_num</span> (split across this turn\'s tools), '
