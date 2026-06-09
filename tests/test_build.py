@@ -137,7 +137,7 @@ class TestBuildPipeline(unittest.TestCase):
     # Lessons confirmed "deepened" (≥2 deep-dive accordions). Grows as each
     # lesson is thickened; keeps the suite green between per-lesson commits
     # while enforcing the depth contract on completed lessons.
-    DEEPENED = {'01-what-is-ga.html'}
+    DEEPENED = {'01-what-is-ga.html', '02-project-map.html', '03-task-lifecycle.html'}
 
     def test_deepened_lessons_have_accordions(self):
         # Every deepened tutorial lesson must carry >= 2 deep-dive accordions.

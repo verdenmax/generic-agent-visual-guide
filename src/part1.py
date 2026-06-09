@@ -416,6 +416,142 @@ def lesson_02(t):
         + '<span class="inline">agent_loop.py: BaseHandler</span>' + t('。', '.') + '</li>'
         + '</ul></div>'
 
+        + c.deepdive_heading(t)
+        + c.accordion(t, 1, '每个模块到底负责什么（一行看懂）',
+            'What each module is actually responsible for',
+            c.qa(t, '🧪 模块职责清单', 'Module responsibilities',
+                 '<table class="t"><tr><th>' + t('模块', 'Module') + '</th><th>'
+                 + t('它做什么', 'What it does') + '</th></tr>'
+                 + '<tr><td class="mono">agent_loop.py</td><td>'
+                 + t('自主执行循环本体：agent_runner_loop、BaseHandler.dispatch、StepOutcome 数据类。',
+                     'The autonomous loop itself: agent_runner_loop, BaseHandler.dispatch, the StepOutcome dataclass.') + '</td></tr>'
+                 + '<tr><td class="mono">llmcore.py</td><td>'
+                 + t('LLM 内核：多家协议适配、流式输出、把回复解析成 tool_calls（ToolClient、resolve_client 等）。',
+                     'The LLM core: multi-vendor protocol adapters, streaming, and parsing replies into tool_calls (ToolClient, resolve_client …).') + '</td></tr>'
+                 + '<tr><td class="mono">ga.py</td><td>'
+                 + t('GenericAgentHandler：9 个原子工具的 do_&lt;tool&gt; 实现，外加 get_global_memory 等。',
+                     'GenericAgentHandler: the 9 atomic tools as do_&lt;tool&gt; methods, plus helpers like get_global_memory.') + '</td></tr>'
+                 + '<tr><td class="mono">agentmain.py</td><td>'
+                 + t('装配与启动：GenericAgent 类把 LLM 客户端、system prompt、工具 schema、handler 接到循环上。',
+                     'Assembly & launch: the GenericAgent class wires the LLM client, system prompt, tools schema and handler into the loop.') + '</td></tr>'
+                 + '<tr><td class="mono">simphtml.py</td><td>'
+                 + t('网页 HTML 简化 / token 优化，被 ga.py 的 web 工具调用。',
+                     'Web HTML simplification / token optimization, called by ga.py\'s web tools.') + '</td></tr>'
+                 + '<tr><td class="mono">memory/</td><td>'
+                 + t('分层记忆 L0–L4 与大量 *_sop.md 流程文档，外加 L4_raw_sessions 归档。',
+                     'Layered memory L0–L4 and many *_sop.md procedure docs, plus the L4_raw_sessions archive.') + '</td></tr>'
+                 + '<tr><td class="mono">reflect/</td><td>'
+                 + t('编排与自驱：goal_mode.py、scheduler.py、agent_team_worker.py、autonomous.py。',
+                     'Orchestration & self-drive: goal_mode.py, scheduler.py, agent_team_worker.py, autonomous.py.') + '</td></tr>'
+                 + '<tr><td class="mono">plugins/</td><td>'
+                 + t('观测钩子：hooks.py（trigger）、langfuse_tracing.py。',
+                     'Observability hooks: hooks.py (trigger), langfuse_tracing.py.') + '</td></tr>'
+                 + '<tr><td class="mono">frontends/</td><td>'
+                 + t('各种界面：TUI（tuiapp_v2.py / tui_v3.py）、IM 机器人（tgapp.py / wechatapp.py / qqapp.py…）。',
+                     'User interfaces: TUI (tuiapp_v2.py / tui_v3.py) and IM bots (tgapp.py / wechatapp.py / qqapp.py …).') + '</td></tr>'
+                 + '<tr><td class="mono">ga_cli/</td><td>'
+                 + t('命令行入口：cli.py、__main__.py。',
+                     'The command-line entry: cli.py, __main__.py.') + '</td></tr></table>')
+            + c.qa(t, '❓ 为什么循环和工具要分开放', 'Why split the loop from the tools',
+                   '<p>' + t(
+                       '<span class="inline">agent_loop.py</span> 只关心“节奏”——问模型、派发、收结果、决定是否继续；'
+                       '它<strong>不知道任何具体工具</strong>。工具实现全在 <span class="inline">ga.py</span>。'
+                       '这样循环可以保持在约 100 行、长期不变，而工具能随便增删——两者通过一个简单约定（do_&lt;tool&gt; 方法 + '
+                       'StepOutcome 返回值）解耦。',
+                       '<span class="inline">agent_loop.py</span> cares only about <em>rhythm</em> — ask the model, '
+                       'dispatch, collect results, decide whether to continue; it <strong>knows nothing about any '
+                       'specific tool</strong>. Every tool lives in <span class="inline">ga.py</span>. That keeps the '
+                       'loop around 100 lines and essentially frozen, while tools come and go freely — the two are '
+                       'decoupled by one simple contract (a do_&lt;tool&gt; method returning a StepOutcome).') + '</p>'))
+        + c.accordion(t, 2, '文件之间如何互相 import：一条主线',
+            'How the files import each other: one main thread',
+            c.qa(t, '🧪 真实的接线代码', 'The real wiring code',
+                 c.codefile('agentmain.py', 'GenericAgent.run',
+                     '<span class="kw">from</span> agent_loop <span class="kw">import</span> agent_runner_loop\n'
+                     '<span class="kw">from</span> ga <span class="kw">import</span> GenericAgentHandler, get_global_memory\n\n'
+                     'handler = <span class="fn">GenericAgentHandler</span>(self, self.history, '
+                     '<span class="st">\'.../temp\'</span>)\n'
+                     'gen = <span class="fn">agent_runner_loop</span>(self.llmclient, sys_prompt, raw_query,\n'
+                     '                        handler, TOOLS_SCHEMA, max_turns=<span class="nb">80</span>)\n'))
+            + c.qa(t, '⚙️ 继承关系', 'The inheritance chain',
+                   '<p>' + t(
+                       '<span class="inline">ga.py</span> 顶部写着 '
+                       '<span class="inline">from agent_loop import BaseHandler, StepOutcome</span>，'
+                       '于是 <span class="inline">class GenericAgentHandler(BaseHandler)</span> '
+                       '<strong>继承</strong>了循环里那套 dispatch 机制——它只需补上各个 do_&lt;tool&gt; 方法，'
+                       '派发逻辑由父类 <span class="inline">BaseHandler.dispatch</span> 提供。'
+                       '换句话说：循环定义“怎么派发”，子类只填“派发到哪”。',
+                       '<span class="inline">ga.py</span> opens with '
+                       '<span class="inline">from agent_loop import BaseHandler, StepOutcome</span>, so '
+                       '<span class="inline">class GenericAgentHandler(BaseHandler)</span> <strong>inherits</strong> the '
+                       'dispatch machinery from the loop — it only has to supply the individual do_&lt;tool&gt; methods, '
+                       'while routing is provided by <span class="inline">BaseHandler.dispatch</span> in the parent. '
+                       'In short: the loop defines <em>how</em> to dispatch; the subclass fills in <em>where</em> to.') + '</p>')
+            + c.qa(t, '⚠️ 一个容易看漏的细节', 'An easy detail to miss',
+                   '<p>' + t(
+                       'README/课程常说 max_turns 默认 40——那是 <span class="inline">agent_runner_loop</span> 的'
+                       '<strong>函数默认值</strong>。但真正跑起来时，<span class="inline">agentmain.py</span> 显式传入了 '
+                       '<span class="mono">max_turns=80</span>。读源码时要区分“默认值”和“调用处实际传的值”。',
+                       'The README and lessons often cite max_turns = 40 — that is the <strong>function default</strong> '
+                       'in <span class="inline">agent_runner_loop</span>. At runtime, though, '
+                       '<span class="inline">agentmain.py</span> explicitly passes <span class="mono">max_turns=80</span>. '
+                       'When reading source, separate "the default" from "the value the call site actually passes".') + '</p>'))
+        + c.accordion(t, 3, '“一圈圈围着大模型”这个心智模型',
+            'The "rings around the LLM" mental model',
+            c.qa(t, '🧪 四圈对照', 'The four rings',
+                 '<table class="t"><tr><th>' + t('圈层', 'Ring') + '</th><th>'
+                 + t('文件', 'Files') + '</th><th>' + t('离 LLM', 'Distance') + '</th></tr>'
+                 + '<tr><td>' + t('内核', 'Core') + '</td><td class="mono">agent_loop.py · llmcore.py</td><td>'
+                 + t('最近', 'closest') + '</td></tr>'
+                 + '<tr><td>' + t('装配 / 工具', 'Assembly / tools') + '</td><td class="mono">agentmain.py · ga.py</td><td>'
+                 + t('一圈外', 'one ring out') + '</td></tr>'
+                 + '<tr><td>' + t('经验', 'Experience') + '</td><td class="mono">memory/ · reflect/ · plugins/</td><td>'
+                 + t('两圈外', 'two rings out') + '</td></tr>'
+                 + '<tr><td>' + t('外壳', 'Shell') + '</td><td class="mono">frontends/ · ga_cli/</td><td>'
+                 + t('最远', 'farthest') + '</td></tr></table>')
+            + c.qa(t, '❓ 为什么用“圈”而不是“层”来想', 'Why "rings", not just "layers"',
+                   '<p>' + t(
+                       '“圈”强调一个方向感：<strong>所有信息最终都为最内圈那次 chat 调用服务</strong>。'
+                       '外壳收集用户意图，经验层决定喂什么记忆，装配层组装 prompt 与工具，最后内核把这些交给大模型。'
+                       '遇到一个文件先问“它属于哪一圈、离 LLM 多远”，就能猜到它大概在干什么。',
+                       '"Rings" convey a direction: <strong>everything ultimately serves that innermost chat call</strong>. '
+                       'The shell gathers user intent, the experience layer decides which memory to feed, the assembly '
+                       'layer builds the prompt and tools, and finally the core hands it all to the LLM. Meet a new file '
+                       'and just ask "which ring, how far from the LLM?" — and you can already guess what it does.') + '</p>')
+            + c.qa(t, '🔀 和“分门别类的功能目录”对比', 'vs a flat feature-folder layout',
+                   '<p>' + t(
+                       '很多项目按功能平铺目录（api/、utils/、models/…），你得读很多文件才知道主线在哪。'
+                       'GenericAgent 的圈层模型自带一条<strong>主线</strong>：外圈调内圈，内圈最终落到一次 LLM 调用。'
+                       '这让“从哪开始读”有了唯一答案——从最内圈的 <span class="inline">agent_loop.py</span> 读起。',
+                       'Many projects lay folders out flat by feature (api/, utils/, models/…) and you must read many '
+                       'files before the main thread emerges. GenericAgent\'s ring model has a built-in <strong>main '
+                       'thread</strong>: outer rings call inner ones, and the innermost lands on a single LLM call. That '
+                       'gives "where do I start reading?" one answer — start from the innermost '
+                       '<span class="inline">agent_loop.py</span>.') + '</p>'))
+        + c.accordion(t, 4, '约多少行：核心五个文件的体量',
+            'Roughly how big: the five core files',
+            c.qa(t, '🧪 行数清单', 'Line counts',
+                 '<table class="t"><tr><th>' + t('文件', 'File') + '</th><th>'
+                 + t('约行数', '~lines') + '</th></tr>'
+                 + '<tr><td class="mono">agent_loop.py</td><td class="mono">~133</td></tr>'
+                 + '<tr><td class="mono">llmcore.py</td><td class="mono">~1068</td></tr>'
+                 + '<tr><td class="mono">simphtml.py</td><td class="mono">~873</td></tr>'
+                 + '<tr><td class="mono">ga.py</td><td class="mono">~595</td></tr>'
+                 + '<tr><td class="mono">agentmain.py</td><td class="mono">~308</td></tr>'
+                 + '<tr><td>' + t('合计', 'Total') + '</td><td class="mono">~2977 ≈ 3K</td></tr></table>')
+            + c.qa(t, '❓ 为什么 llmcore.py 反而最大', 'Why is llmcore.py the largest',
+                   '<p>' + t(
+                       '直觉上“循环”应该最复杂，但 <span class="inline">agent_loop.py</span> 只有约 133 行。'
+                       '真正的体量在 <span class="inline">llmcore.py</span>（约 1068 行）——因为它要适配多家厂商的'
+                       '不同协议（OpenAI 原生、Claude 原生、各种 mixin）、处理流式输出与工具调用解析。'
+                       '“循环简单、内核厚”正是“把复杂度外包给大模型生态”的体现。',
+                       'Intuitively the "loop" should be the most complex, yet '
+                       '<span class="inline">agent_loop.py</span> is only ~133 lines. The real bulk sits in '
+                       '<span class="inline">llmcore.py</span> (~1068 lines), because it must adapt to many vendors\' '
+                       'protocols (native OpenAI, native Claude, various mixins), handle streaming, and parse tool '
+                       'calls. "Thin loop, thick core" is exactly what "outsourcing complexity to the LLM ecosystem" '
+                       'looks like.') + '</p>'))
+
         + '<div class="card analogy"><div class="tag">🧩 '
         + t('生活类比', 'Analogy') + '</div>'
         + '<p>'
@@ -590,6 +726,150 @@ def lesson_03(t):
         + '<span class="inline">response.tool_calls</span>'
         + t('，由循环逐个解析执行。', ', which the loop parses and runs one by one.') + '</li>'
         + '</ul></div>'
+
+        + c.deepdive_heading(t)
+        + c.accordion(t, 1, '真实的循环骨架（来自 agent_runner_loop）',
+            'The real turn loop (from agent_runner_loop)',
+            c.qa(t, '🧪 源码节选', 'Source excerpt',
+                 c.codefile('agent_loop.py', 'agent_runner_loop',
+                     'messages = [{<span class="st">\'role\'</span>: <span class="st">\'system\'</span>, '
+                     '<span class="st">\'content\'</span>: system_prompt},\n'
+                     '            {<span class="st">\'role\'</span>: <span class="st">\'user\'</span>, '
+                     '<span class="st">\'content\'</span>: user_input}]\n'
+                     'turn = <span class="nb">0</span>;  handler.max_turns = max_turns\n'
+                     '<span class="kw">while</span> turn &lt; handler.max_turns:\n'
+                     '    turn += <span class="nb">1</span>\n'
+                     '    response = <span class="kw">yield from</span> client.<span class="fn">chat</span>('
+                     'messages=messages, tools=tools_schema)\n'
+                     '    <span class="kw">if</span> <span class="kw">not</span> response.tool_calls:\n'
+                     '        tool_calls = [{<span class="st">\'tool_name\'</span>: '
+                     '<span class="st">\'no_tool\'</span>, <span class="st">\'args\'</span>: {}}]\n'
+                     '    <span class="kw">else</span>:\n'
+                     '        tool_calls = [{<span class="st">\'tool_name\'</span>: tc.function.name, ...}\n'
+                     '                      <span class="kw">for</span> tc <span class="kw">in</span> '
+                     'response.tool_calls]\n'))
+            + c.qa(t, '⚙️ messages 每轮如何重置', 'How messages resets every turn',
+                   '<p>' + t(
+                       '第一轮的 messages 是 <span class="mono">[system, user]</span>。之后<strong>每一轮的结尾</strong>，'
+                       '循环都会执行 <span class="inline">messages = [{role: user, content: next_prompt, '
+                       'tool_results: tool_results}]</span>——把 messages <strong>整个换成一条新的 user 消息</strong>，'
+                       '而不是往里追加。完整对话历史不在 messages 里，而是由 LLM 客户端（Session/backend.history）保存。',
+                       'The first turn\'s messages is <span class="mono">[system, user]</span>. Then at the <strong>end '
+                       'of every turn</strong>, the loop runs <span class="inline">messages = [{role: user, content: '
+                       'next_prompt, tool_results: tool_results}]</span> — it <strong>replaces messages entirely with '
+                       'one new user message</strong> rather than appending to it. The full transcript does not live in '
+                       'messages; it is kept by the LLM client (the Session / backend.history).') + '</p>')
+            + c.qa(t, '❓ 为什么历史交给 Session 而不是 messages', 'Why hand history to the Session',
+                   '<p>' + t(
+                       '源码那一行后面写着注释 <span class="mono"># just new message, history is kept in *Session</span>。'
+                       '把“增量”和“全量历史”分开，循环每轮只需搬运一小段新内容，逻辑极简；而历史的拼装、裁剪、'
+                       '省 token 都交给客户端统一处理。这正是上下文能长期压在 30K 以内的结构性原因。',
+                       'The source line carries the comment <span class="mono"># just new message, history is kept in '
+                       '*Session</span>. Separating the "delta" from the "full history" lets the loop move only a small '
+                       'new chunk each turn, keeping its logic minimal; assembling, trimming and token-thrifting the '
+                       'history is all handled in one place by the client. That is the structural reason context stays '
+                       'under ~30K.') + '</p>'))
+        + c.accordion(t, 2, '三种退出条件，分别长什么样',
+            'The three exit conditions, one by one',
+            c.qa(t, '🧪 三种退出对照', 'The three exits side by side',
+                 '<table class="t"><tr><th>' + t('exit_reason', 'exit_reason') + '</th><th>'
+                 + t('触发条件', 'Trigger') + '</th></tr>'
+                 + '<tr><td class="mono">EXITED</td><td>'
+                 + t('某个工具返回 should_exit=True（如 ask_user 等待你回答）。',
+                     'A tool returns should_exit=True (e.g. ask_user waits for your answer).') + '</td></tr>'
+                 + '<tr><td class="mono">CURRENT_TASK_DONE</td><td>'
+                 + t('某个工具的 next_prompt 为空——“没有下一句要说”，即任务完成。',
+                     'A tool\'s next_prompt is empty — "nothing more to say", i.e. the task is done.') + '</td></tr>'
+                 + '<tr><td class="mono">MAX_TURNS_EXCEEDED</td><td>'
+                 + t('while 跑满 max_turns 仍未收尾，作为兜底返回。',
+                     'The while loop hits max_turns without wrapping up; returned as the fallback.') + '</td></tr></table>')
+            + c.qa(t, '⚙️ 内部怎么走', 'Under the hood',
+                   '<p>' + t(
+                       '在工具循环里，源码先判 <span class="inline">if outcome.should_exit:</span> 置 '
+                       '<span class="mono">EXITED</span> 并 break；再判 <span class="inline">if not outcome.next_prompt:'
+                       '</span> 置 <span class="mono">CURRENT_TASK_DONE</span> 并 break。两者都没发生且 while 自然结束时，'
+                       '函数最后 <span class="inline">return exit_reason or {\'result\': \'MAX_TURNS_EXCEEDED\'}</span>。',
+                       'Inside the tool loop, the source first checks <span class="inline">if outcome.should_exit:</span> '
+                       'to set <span class="mono">EXITED</span> and break; then <span class="inline">if not '
+                       'outcome.next_prompt:</span> to set <span class="mono">CURRENT_TASK_DONE</span> and break. If '
+                       'neither fires and the while ends naturally, the function finally does '
+                       '<span class="inline">return exit_reason or {\'result\': \'MAX_TURNS_EXCEEDED\'}</span>.') + '</p>')
+            + c.qa(t, '⚠️ 一个不显眼的“缓冲”：_done_hooks', 'A subtle buffer: _done_hooks',
+                   '<p>' + t(
+                       '“任务完成”不一定立刻结束：当没有 next_prompt 且没有 EXITED 时，循环会先看 '
+                       '<span class="inline">handler._done_hooks</span> 里有没有排队的收尾提示，有就再追加一轮。'
+                       '只有 EXITED 或 _done_hooks 也空了，才真正 break。读循环时别把“没有 next_prompt”直接等同于“马上停”。',
+                       'A "done" task does not always stop immediately: when there is no next_prompt and no EXITED, the '
+                       'loop first checks whether <span class="inline">handler._done_hooks</span> has any queued wrap-up '
+                       'prompts, and if so it runs one more turn. Only EXITED, or an empty _done_hooks, truly breaks. '
+                       'When reading the loop, don\'t equate "no next_prompt" with "stop right now".') + '</p>'))
+        + c.accordion(t, 3, 'StepOutcome 的三个字段到底承载什么',
+            'What StepOutcome\'s three fields actually carry',
+            c.qa(t, '🧪 dataclass 源码', 'The dataclass source',
+                 c.codefile('agent_loop.py', 'StepOutcome',
+                     '<span class="kw">@dataclass</span>\n'
+                     '<span class="kw">class</span> <span class="fn">StepOutcome</span>:\n'
+                     '    data: Any\n'
+                     '    next_prompt: Optional[str] = <span class="nb">None</span>\n'
+                     '    should_exit: bool = <span class="nb">False</span>\n'))
+            + c.qa(t, '⚙️ 三个字段各自的去向', 'Where each field flows',
+                   '<p>' + t(
+                       '<strong>data</strong>：工具的结果，若非空且非 no_tool，被序列化进 '
+                       '<span class="inline">tool_results</span>，随下一轮回传给模型。'
+                       '<strong>next_prompt</strong>：下一轮要对模型说的话；多个工具的 next_prompt 会汇入一个 set 再 '
+                       '<span class="mono">\'\\n\'.join(...)</span>。'
+                       '<strong>should_exit</strong>：True 时直接置 EXITED 并 break。',
+                       '<strong>data</strong>: the tool\'s result; if non-empty and not no_tool, it is serialized into '
+                       '<span class="inline">tool_results</span> and sent back to the model next turn. '
+                       '<strong>next_prompt</strong>: what to say to the model next turn; multiple tools\' next_prompts '
+                       'collect into a set, then <span class="mono">\'\\n\'.join(...)</span>. '
+                       '<strong>should_exit</strong>: when True, sets EXITED and breaks immediately.') + '</p>')
+            + c.qa(t, '❓ 为什么 next_prompt 同时管“说什么”和“是否结束”', 'Why next_prompt doubles as an end-signal',
+                   '<p>' + t(
+                       '一个字段兼任两职：有内容→继续，并把这段话作为下一轮的提问；为空（None/\'\'）→视为“没有下一步”，'
+                       '即 <span class="mono">CURRENT_TASK_DONE</span>。这样循环不需要一个单独的“结束标志”——'
+                       '“无话可说”天然就是“做完了”，省掉一个状态，逻辑更紧凑。',
+                       'One field, two jobs: non-empty → continue, using that text as the next turn\'s prompt; empty '
+                       '(None/\'\') → treated as "no next step", i.e. <span class="mono">CURRENT_TASK_DONE</span>. So the '
+                       'loop needs no separate "finished" flag — "nothing left to say" naturally means "done", removing '
+                       'a state and keeping the logic compact.') + '</p>'))
+        + c.accordion(t, 4, '一轮里调用多个工具会怎样',
+            'What happens when one turn calls several tools',
+            c.qa(t, '🧪 多工具循环', 'The multi-tool loop',
+                 c.codefile('agent_loop.py', 'agent_runner_loop',
+                     'tool_results = []; next_prompts = <span class="fn">set</span>(); exit_reason = {}\n'
+                     '<span class="kw">for</span> ii, tc <span class="kw">in</span> '
+                     '<span class="fn">enumerate</span>(tool_calls):\n'
+                     '    gen = handler.<span class="fn">dispatch</span>(tool_name, args, response,\n'
+                     '                            index=ii, tool_num=<span class="fn">len</span>(tool_calls))\n'
+                     '    outcome = ...  <span class="cm"># run the do_&lt;tool&gt; method</span>\n'
+                     '    <span class="kw">if</span> outcome.should_exit: ...; <span class="kw">break</span>\n'
+                     '    <span class="kw">if</span> <span class="kw">not</span> outcome.next_prompt: ...; '
+                     '<span class="kw">break</span>\n'
+                     '    tool_results.<span class="fn">append</span>(...)\n'
+                     '    next_prompts.<span class="fn">add</span>(outcome.next_prompt)\n'))
+            + c.qa(t, '⚙️ index 和 tool_num 是干嘛的', 'What index and tool_num are for',
+                   '<p>' + t(
+                       '模型一轮可以请求<strong>多个</strong>工具调用。循环用 '
+                       '<span class="inline">enumerate</span> 遍历，把序号 <span class="mono">index=ii</span> 与总数 '
+                       '<span class="mono">tool_num=len(tool_calls)</span> 传进 dispatch。工具据此调整行为——'
+                       '例如 <span class="inline">do_code_run</span> 用 _tool_num 把单次输出上限均摊（'
+                       '<span class="mono">10000 // _tool_num</span>），多工具时每个少占点 token。',
+                       'The model can request <strong>several</strong> tool calls in one turn. The loop iterates with '
+                       '<span class="inline">enumerate</span>, passing the position <span class="mono">index=ii</span> '
+                       'and the total <span class="mono">tool_num=len(tool_calls)</span> into dispatch. Tools use these '
+                       'to adapt — e.g. <span class="inline">do_code_run</span> divides its output cap by _tool_num '
+                       '(<span class="mono">10000 // _tool_num</span>), so each tool takes fewer tokens when several '
+                       'run together.') + '</p>')
+            + c.qa(t, '⚠️ 多工具时的提前退出', 'Early exit among multiple tools',
+                   '<p>' + t(
+                       '注意那两个 <span class="kw">break</span>：只要<strong>其中一个</strong>工具 should_exit 或交回空 '
+                       'next_prompt，整轮的工具循环就<strong>立刻中断</strong>，后面排队的工具不再执行。所以多工具调用'
+                       '不是“全部跑完再决定”，而是“边跑边可能提前收尾”。',
+                       'Note the two <span class="kw">break</span>s: as soon as <strong>any one</strong> tool sets '
+                       'should_exit or returns an empty next_prompt, the whole turn\'s tool loop <strong>stops '
+                       'immediately</strong> and the remaining queued tools do not run. So a multi-tool turn is not '
+                       '"run them all, then decide" but "run them while possibly wrapping up early".') + '</p>'))
 
         + '<div class="card analogy"><div class="tag">🧩 '
         + t('生活类比', 'Analogy') + '</div>'
