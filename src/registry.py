@@ -21,7 +21,7 @@ CONTENT = {
     "11-layered-memory.html": part3.lesson_11,
     "12-memory-crystallize.html": part3.lesson_12,
     "13-hooks-observability.html": part3.lesson_13,
-    "14-rendering.html": part3.lesson_14,
+    "14-context-tokens.html": part3.lesson_14,
     "15-vision.html": part4.lesson_15,
     "16-input-mobile.html": part4.lesson_16,
     "17-browser.html": part4.lesson_17,

@@ -3,17 +3,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.className = 'lang-' + (localStorage.getItem('galang') || 'zh');</script>
-<title>14 · 渲染与展示管线 / Rendering Pipeline — GenericAgent 图解教程</title>
-<meta name="description" content="第三部分 · 内部源码｜渲染与展示管线：面向新手的 GenericAgent 图解教程，配真实源码对应与设计亮点。">
+<title>14 · 上下文工程与 Token 效率 / Context Engineering & Token Efficiency — GenericAgent 图解教程</title>
+<meta name="description" content="第三部分 · 内部源码｜上下文工程与 Token 效率：面向新手的 GenericAgent 图解教程，配真实源码对应与设计亮点。">
 <meta name="theme-color" content="#5b4ddb">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMic+PHJlY3Qgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJyByeD0nNycgZmlsbD0nIzViNGRkYicvPjx0ZXh0IHg9JzE2JyB5PScyMicgZm9udC1mYW1pbHk9J3N5c3RlbS11aSxzYW5zLXNlcmlmJyBmb250LXNpemU9JzE0JyBmb250LXdlaWdodD0nNzAwJyBmaWxsPScjZmZmJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz5HQTwvdGV4dD48L3N2Zz4=">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="GenericAgent 图解教程">
-<meta property="og:title" content="14 · 渲染与展示管线 / Rendering Pipeline — GenericAgent 图解教程">
-<meta property="og:description" content="第三部分 · 内部源码｜渲染与展示管线：面向新手的 GenericAgent 图解教程，配真实源码对应与设计亮点。">
+<meta property="og:title" content="14 · 上下文工程与 Token 效率 / Context Engineering & Token Efficiency — GenericAgent 图解教程">
+<meta property="og:description" content="第三部分 · 内部源码｜上下文工程与 Token 效率：面向新手的 GenericAgent 图解教程，配真实源码对应与设计亮点。">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="14 · 渲染与展示管线 / Rendering Pipeline — GenericAgent 图解教程">
-<meta name="twitter:description" content="第三部分 · 内部源码｜渲染与展示管线：面向新手的 GenericAgent 图解教程，配真实源码对应与设计亮点。">
+<meta name="twitter:title" content="14 · 上下文工程与 Token 效率 / Context Engineering & Token Efficiency — GenericAgent 图解教程">
+<meta name="twitter:description" content="第三部分 · 内部源码｜上下文工程与 Token 效率：面向新手的 GenericAgent 图解教程，配真实源码对应与设计亮点。">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -276,7 +276,7 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
 <div class="wrap">
   <div class="hero">
     <div class="part"><span class="zh">第三部分 · 内部源码</span><span class="en">Part 3 · Inside the Source</span></div>
-    <h1><span class="zh">渲染与展示管线</span><span class="en">Rendering Pipeline</span></h1>
+    <h1><span class="zh">上下文工程与 Token 效率</span><span class="en">Context Engineering & Token Efficiency</span></h1>
   </div>
   <div class="zh"><p class="lead">本课内容正在编写中。</p></div><div class="en"><p class="lead">This lesson is being written.</p></div>
   <div class="footnav"><a class="prev" href="13-hooks-observability.html"><div class="dir"><span class="zh">← 上一课</span><span class="en">← Prev</span></div><div class="ttl"><span class="zh">钩子与可观测性</span><span class="en">Hooks & Observability</span></div></a><a class="next" href="15-vision.html"><div class="dir"><span class="zh">下一课 →</span><span class="en">Next →</span></div><div class="ttl"><span class="zh">计算机控制 · 视觉</span><span class="en">Computer Control · Vision</span></div></a></div>
