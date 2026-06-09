@@ -374,6 +374,11 @@ table.t td.mono, table.t td .mono { font-family: ui-monospace, monospace; font-s
 .legend { display:flex; gap:1.2rem; flex-wrap:wrap; margin-top:1rem; font-size:.8rem; color:var(--muted); }
 .legend span { display:flex; align-items:center; gap:.4rem; }
 .legend i { width:12px; height:12px; border-radius:3px; display:inline-block; }
+.pdf-row { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:1.1rem; }
+.pdf-btn { display:inline-flex; align-items:center; gap:.4rem; padding:.55rem 1.1rem;
+  background:var(--accent); color:#fff; border-radius:10px; font-size:.9rem; font-weight:650;
+  box-shadow:var(--shadow); transition:.15s; }
+.pdf-btn:hover { background:var(--accent-ink); transform:translateY(-1px); }
 """
 
 SEARCH_JS = """
@@ -596,6 +601,10 @@ def index_page(lesson_prefix="lessons/"):
       <span><i style="background:var(--accent)"></i>{bi("要点", "Key points")}</span>
     </div>
     <p style="margin:.9rem 0 0;color:var(--faint);font-size:.8rem">{anchor}</p>
+    <div class="pdf-row">
+      <span class="zh"><a class="pdf-btn" href="generic-agent-visual-guide-zh.pdf">📄 下载 PDF（中文）</a></span>
+      <span class="en"><a class="pdf-btn" href="generic-agent-visual-guide-en.pdf">📄 Download PDF (English)</a></span>
+    </div>
   </div>
   <div class="toc-search">
     <input id="q" type="search" data-ph-zh="🔎 搜索课程：标题 / 关键词" data-ph-en="🔎 Search lessons: title / keyword" placeholder="🔎 搜索课程：标题 / 关键词" autocomplete="off" aria-label="搜索课程 / Search lessons">

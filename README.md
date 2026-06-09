@@ -14,6 +14,12 @@
 ![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)
 ![Docs](https://img.shields.io/badge/docs-%E4%B8%AD%E6%96%87%20%2F%20EN-orange.svg)
 
+> 🌐 **在线阅读 / Read online**: <https://verdenmax.github.io/generic-agent-visual-guide/>
+> · 📄 **下载 PDF / Download PDF**:
+> [中文](https://verdenmax.github.io/generic-agent-visual-guide/generic-agent-visual-guide-zh.pdf)
+> · [English](https://verdenmax.github.io/generic-agent-visual-guide/generic-agent-visual-guide-en.pdf)
+> *(在线地址与 PDF 由 GitHub Actions 自动构建部署 / built & deployed by GitHub Actions.)*
+
 本教程**对照 GenericAgent 真实源码核实**，源码引用以「**文件 + 符号名**」为主（不写死行号，避免随上游更新失效）。
 All technical claims are **verified against the real GenericAgent source**, cited by **file + symbol name**
 (no hard-coded line numbers, which drift as upstream changes).
@@ -94,12 +100,15 @@ generic-agent-visual-guide/
 ├── src/                    ← 无依赖 Python 生成器 / no-dependency Python generators
 │   ├── shell.py            共享外壳：CSS 设计系统 / 导航 / 语言切换 / index 页
 │   ├── i18n.py             双语助手 t(zh,en) / render_bilingual
+│   ├── components.py       深挖卡片构件 accordion / qa / codefile
 │   ├── part1.py … part5.py 各部分课程内容 / lesson content
 │   ├── glossary.py         术语表 + 源文件索引 / glossary + source index
 │   ├── registry.py         文件名 → 课程函数 映射 / filename → lesson map
 │   ├── build.py            站点构建 / site build
+│   ├── build_print.py      双语 print 页构建（供导出 PDF）/ print editions for PDF
 │   └── check_links.py      内部死链 + 锚点检查 / internal link & anchor check
-├── tests/                  ← Python unittest（构建 / 双语 / 死链）
+├── tests/                  ← Python unittest（构建 / 双语 / 死链 / print）
+├── .github/workflows/      ← CI（防回归）+ Deploy（Pages + PDF）
 ├── README.md  LICENSE  .gitignore
 ```
 
@@ -111,6 +120,7 @@ All HTML is produced by the generators in `src/`, needing **only Python 3, zero 
 ```bash
 cd src
 python build.py          # 生成 index.html + lessons/ / build the site
+python build_print.py    # 生成 print-zh.html + print-en.html（供导出 PDF）/ build the print editions
 python check_links.py    # 校验内部链接与锚点 / verify internal links & anchors
 ```
 
@@ -120,8 +130,23 @@ Pages are interlinked with relative links, so the whole site can be copied to an
 ## ✅ 测试 / Tests
 
 ```bash
-python -m unittest discover tests   # 构建冒烟 · 双语完整性 · 死链 · 卡片格式
+python -m unittest discover tests   # 构建冒烟 · 双语完整性 · 死链 · 卡片格式 · print 构建
 ```
+
+## 🚀 自动化 / CI & Deploy
+
+仓库内置两个 GitHub Actions 工作流：
+This repo ships two GitHub Actions workflows:
+
+- **`.github/workflows/ci.yml`** — 每次 push / PR 防回归：重建站点并校验**与提交的 HTML 无漂移**、内部链接零死链、跑全部测试。
+  On every push / PR: rebuild and assert **no drift** vs the committed HTML, zero broken links, and a green test suite.
+- **`.github/workflows/deploy.yml`** — push 到 `master` 时：构建站点 + 双语 print 页 → 用无头 Chrome（已装 CJK/emoji 字体）渲染**两份 PDF**（中/英）→ 部署到 **GitHub Pages**；打 `v*` **标签**时把 PDF 附到 Release。
+  On push to `master`: build the site + bilingual print pages → render **two PDFs** (zh/en) with headless Chrome (CJK/emoji fonts installed) → deploy to **GitHub Pages**; on a `v*` **tag**, attach the PDFs to a Release.
+
+**首次启用（一次性）/ One-time setup:** 仓库 **Settings → Pages → Build and deployment → Source** 选 **GitHub Actions**（此工作流只负责部署，无法自行创建 Pages 站点）。
+In the repo, set **Settings → Pages → Build and deployment → Source** to **GitHub Actions** (the workflow only deploys; it cannot create the Pages site itself).
+
+发布带 PDF 的版本 / Release with PDFs: `git tag v1.0 && git push --tags`.
 
 ## 📄 许可 / License
 

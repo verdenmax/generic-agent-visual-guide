@@ -14,4 +14,5 @@ Thumbs.db
 
 # Build artifacts
 *.pdf
+print-*.html
 _site/

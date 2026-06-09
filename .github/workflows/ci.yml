@@ -1,0 +1,37 @@
+name: CI
+
+# Anti-regression: every push / PR must (1) rebuild the site from src/ with no
+# drift against the committed HTML, (2) have no broken internal links/anchors,
+# and (3) pass the test suite. Dependency-free — only Python 3.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Rebuild site and verify no drift
+        run: |
+          cd src && python build.py && cd ..
+          if ! git diff --exit-code -- index.html lessons/; then
+            echo "::error::Committed HTML is out of date. Run 'cd src && python build.py' and commit the result."
+            exit 1
+          fi
+
+      - name: Check internal links and anchors
+        run: cd src && python check_links.py
+
+      - name: Run tests
+        run: python -m unittest discover tests -v
