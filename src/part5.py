@@ -117,7 +117,116 @@ def lesson_20(t):
 
 
 def lesson_21(t):
-    return f'<p class="lead">{t("本课内容正在编写中。", "This lesson is being written.")}</p>'
+    """端到端实战：造一个新技能 / End-to-End: Build a Skill."""
+    return (
+        '<p class="lead">'
+        + t(
+            '理论讲完了，来走一遍真实流程。以一句“<strong>帮我读一下微信聊天记录</strong>”为例，看 GA 第一次怎么从零摸索，'
+            '又怎么把成果<strong>沉淀成一条技能</strong>，让第二次变成一句话的事。',
+            'Enough theory — let us walk a real flow. Take "<strong>read my WeChat messages</strong>" as an example, '
+            'and watch how GA fumbles from scratch the first time, then <strong>settles the result into a skill</strong> '
+            'so the second time becomes a one-liner.',
+        )
+        + '</p>'
+
+        + '<div class="card macro"><div class="tag">🌍 '
+        + t('宏观理解', 'The Big Picture') + '</div>'
+        + '<p>'
+        + t(
+            '“造技能”不是单独的功能，而是把前面所有零件<strong>拼起来用一次</strong>：用工具去探索，用记忆去结晶。'
+            '关键分水岭就一个——<strong>第一次</strong>（慢，要试错）和<strong>之后每次</strong>（快，直接召回）。',
+            '"Building a skill" is not a separate feature; it is <strong>using all the earlier parts together once</strong>: '
+            'tools to explore, memory to crystallize. The watershed is a single one — the <strong>first time</strong> '
+            '(slow, trial and error) versus <strong>every time after</strong> (fast, direct recall).',
+        )
+        + '</p></div>'
+
+        + '<h2>' + t('第一次：从零摸索', 'First time: from scratch') + '</h2>'
+        + '<div class="vflow">'
+        + '<div class="step"><div class="num">1</div><div class="sc"><h4>'
+        + t('记住目标', 'Capture the goal') + '</h4><p>'
+        + t('收到任务，先用 update_working_checkpoint 记下“要读微信记录”和关键约束。',
+            'On receiving the task, use update_working_checkpoint to note "read WeChat messages" and key constraints.') + '</p></div></div>'
+        + '<div class="step"><div class="num">2</div><div class="sc"><h4>'
+        + t('探索与试错', 'Explore & iterate') + '</h4><p>'
+        + t('用 code_run 装依赖、定位数据库、写读取脚本，失败就读报错再改。',
+            'Use code_run to install deps, locate the database, write a read script; on failure, read the error and fix.') + '</p></div></div>'
+        + '<div class="step"><div class="num">3</div><div class="sc"><h4>'
+        + t('验证成功', 'Verify success') + '</h4><p>'
+        + t('真正跑通、读出消息——这一步是“能不能记忆”的前提（无行动，不记忆）。',
+            'Actually run it and read out the messages — the prerequisite for "may we remember" (no execution, no memory).') + '</p></div></div>'
+        + '<div class="step"><div class="num">4</div><div class="sc"><h4>'
+        + t('结晶为技能', 'Crystallize a skill') + '</h4><p>'
+        + t('start_long_term_update：把脚本路径与关键坑点写成 L3 SOP，在 L1 索引登记一行。',
+            'start_long_term_update: write the script path and key pitfalls into an L3 SOP, and register one line in the L1 index.') + '</p></div></div>'
+        + '</div>'
+
+        + '<h2>' + t('之后每次：一句话', 'Every time after: one sentence') + '</h2>'
+        + '<table class="t">'
+        + '<tr><th>' + t('你说的话', 'What you say') + '</th><th>' + t('第一次', 'First time') + '</th>'
+        + '<th>' + t('之后每次', 'Every time after') + '</th></tr>'
+        + '<tr><td>' + t('“读我的微信记录”', '"Read my WeChat messages"') + '</td>'
+        + '<td>' + t('装依赖 → 逆向数据库 → 写读取脚本 → 存为技能', 'install deps → reverse the DB → write a read script → save as a skill') + '</td>'
+        + '<td>' + t('一句话直接调用', 'one-line invoke') + '</td></tr>'
+        + '<tr><td>' + t('“盯盘并提醒我”', '"Monitor stocks and alert me"') + '</td>'
+        + '<td>' + t('装行情库 → 搭选股流程 → 配定时 → 存为技能', 'install a quotes lib → build a screening flow → set up a schedule → save as a skill') + '</td>'
+        + '<td>' + t('一句话启动', 'one-line start') + '</td></tr>'
+        + '</table>'
+
+        + '<div class="card detail"><div class="tag">🔬 '
+        + t('源码对应', 'In the Source') + '</div>'
+        + '<ul>'
+        + '<li>' + t('用到的工具都来自第 7 课：', 'The tools used are all from lesson 7: ')
+        + '<span class="inline">code_run</span>' + t('（探索）、', ' (explore), ')
+        + '<span class="inline">file_write / file_patch</span>' + t('（写脚本与 SOP）、',
+            ' (write scripts and SOPs), ')
+        + '<span class="inline">update_working_checkpoint</span>' + t(' 与 ', ' and ')
+        + '<span class="inline">start_long_term_update</span>' + t('（记忆）。', ' (memory).') + '</li>'
+        + '<li>' + t('结晶遵循 L0 记忆铁律（', 'Crystallization follows the L0 memory rules (')
+        + '<span class="inline">memory/memory_management_sop.md</span>'
+        + t('）：只记验证成功的要点，最小化 patch；技能落到 L3（memory/ 下的 *_sop.md）。',
+            '): record only verified essentials, patch minimally; the skill lands in L3 (a *_sop.md under memory/).') + '</li>'
+        + '<li>' + t('下次靠 ', 'Next time, ')
+        + '<span class="inline">memory/skill_search/</span>'
+        + t(' 在技能库里找回这条 SOP。', ' finds this SOP back in the skill library.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card analogy"><div class="tag">🧩 '
+        + t('生活类比', 'Analogy') + '</div>'
+        + t(
+            '像第一次去一个陌生小区送货：你得边问边找、走几条冤枉路；但只要这一趟<strong>真送到了</strong>，你就把'
+            '“几号门、哪个单元、门禁密码”记进备忘。第二趟，导航直达，再不绕路。GA 的“造技能”就是把这本送货备忘<strong>自动写下来</strong>。',
+            'Like delivering to an unfamiliar neighborhood for the first time: you ask around and take a few wrong turns; '
+            'but once this trip <strong>actually succeeds</strong>, you note "which gate, which unit, the door code". The '
+            'second trip, navigation takes you straight there. GA\'s "build a skill" simply <strong>writes that delivery '
+            'note down automatically</strong>.',
+        )
+        + '</div>'
+
+        + '<div class="card key"><div class="tag">✅ '
+        + t('关键要点', 'Key Takeaways') + '</div><ul>'
+        + '<li>' + t('第一次：记目标 → 探索试错 → 验证成功 → 结晶为技能。',
+            'First time: capture goal → explore & iterate → verify success → crystallize a skill.') + '</li>'
+        + '<li>' + t('之后每次：顺着技能库一句话召回，不再重复试错。',
+            'Every time after: recall from the skill library in one sentence, no repeated trial and error.') + '</li>'
+        + '<li>' + t('全程没有新机制，只是把工具 + 记忆按自进化闭环用了一遍。',
+            'No new mechanism throughout — just tools + memory used once along the self-evolution loop.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card spark"><div class="tag">💡 '
+        + t('设计亮点', 'Design Insight') + '</div>'
+        + t(
+            '注意这一课<strong>没有引入任何新东西</strong>：工具是第 7 课的、记忆是第 11–12 课的、闭环是第 20 课的。'
+            '“造技能”之所以成立，正因为前面每块积木都<strong>小而正交、能自由拼接</strong>。这就是 GenericAgent 最深的设计取向——'
+            '与其堆功能，不如把少数几件事做对，然后让它们<strong>互相组合，长出无穷</strong>。',
+            'Notice this lesson <strong>introduces nothing new</strong>: the tools are from lesson 7, the memory from '
+            'lessons 11–12, the loop from lesson 20. "Build a skill" holds together precisely because every earlier block '
+            'is <strong>small, orthogonal and freely composable</strong>. This is GenericAgent\'s deepest design '
+            'orientation — rather than piling on features, get a few things right and let them <strong>combine to grow '
+            'without end</strong>.',
+        )
+        + '</div>'
+    )
 
 
 def lesson_22(t):
