@@ -576,7 +576,95 @@ def lesson_12(t):
 
 
 def lesson_13(t):
-    return f'<p class="lead">{t("本课内容正在编写中。", "This lesson is being written.")}</p>'
+    """钩子与可观测性 / Hooks & Observability."""
+    return (
+        '<p class="lead">'
+        + t(
+            '想知道每一轮花了多少 token、想给某个工具加一道审计、想接入追踪系统——又不想去改那 100 行核心循环？'
+            'GenericAgent 用一套<strong>钩子（hooks）</strong>解决：循环在每个关键时刻“喊一嗓子”，插件们各自接住。',
+            'Want to know how many tokens each turn cost, add an audit to a tool, or wire in a tracing system — '
+            'without touching the 100-line core loop? GenericAgent solves it with <strong>hooks</strong>: the loop '
+            '"calls out" at every key moment, and plugins catch the calls.',
+        )
+        + '</p>'
+
+        + '<div class="card macro"><div class="tag">🌍 '
+        + t('宏观理解', 'The Big Picture') + '</div>'
+        + '<p>'
+        + t(
+            '钩子是一种<strong>发布 / 订阅</strong>机制：核心循环在固定的时间点触发事件（agent / turn / llm / tool 的 '
+            'before / after），任何插件都能注册回调来“收听”。核心代码完全不知道有谁在听——这就是“零耦合扩展”。',
+            'Hooks are a <strong>publish/subscribe</strong> mechanism: the core loop fires events at fixed points '
+            '(the before/after of agent / turn / llm / tool), and any plugin can register a callback to "listen". '
+            'The core has no idea who is listening — that is "zero-coupling extension".',
+        )
+        + '</p></div>'
+
+        + '<div class="codefile"><div class="cf-head"><span class="dot"></span>'
+        + '<span class="path">plugins/hooks.py</span><span class="ln">register / trigger</span></div>'
+        + '<pre>'
+        + '<span class="cm"># ' + t('插件侧：注册一个回调', 'plugin side: register a callback') + '</span>\n'
+        + '<span class="kw">@hooks.register</span>(<span class="st">\'llm_after\'</span>)\n'
+        + '<span class="kw">def</span> <span class="fn">on_llm_after</span>(ctx):\n'
+        + '    ...  <span class="cm"># ' + t('读 ctx，可返回修改后的 ctx', 'read ctx, may return a modified ctx') + '</span>\n'
+        + '\n'
+        + '<span class="cm"># ' + t('核心侧：循环在关键点触发事件', 'core side: the loop fires events at key points') + '</span>\n'
+        + 'trigger(<span class="st">\'llm_after\'</span>, ctx)  <span class="cm"># ' + t('在 agent_loop.py 里写作 _hook(...)', 'written as _hook(...) inside agent_loop.py') + '</span>\n'
+        + '</pre></div>'
+
+        + '<div class="card detail"><div class="tag">🔬 '
+        + t('源码对应', 'In the Source') + '</div>'
+        + '<ul>'
+        + '<li>' + t('机制在 ', 'The mechanism is in ')
+        + '<span class="inline">plugins/hooks.py</span>'
+        + t('：register(event) 装饰器登记回调，trigger(event, ctx) 依次调用；',
+            ': the register(event) decorator registers a callback, trigger(event, ctx) calls them in turn;') + '</li>'
+        + '<li>' + t('循环里成对触发这些事件：', 'The loop fires these events in pairs: ')
+        + '<span class="inline">agent_before/after · turn_before/after · llm_before/after · tool_before/after</span>'
+        + t('（见 agent_loop.py 里的 _hook 调用与 dispatch）。',
+            ' (see the _hook calls in agent_loop.py and dispatch).') + '</li>'
+        + '<li>' + t('插件自动发现：', 'Plugins are auto-discovered: ')
+        + '<span class="inline">discover_and_load</span>'
+        + t(' 扫描 plugins/ 目录加载模块；', ' scans the plugins/ directory and loads modules; ')
+        + '<span class="inline">plugins/langfuse_tracing.py</span>'
+        + t(' 就是个现成例子——它注册到上述事件，做调用追踪与 token 用量统计。',
+            ' is a ready example — it registers on those events to do call tracing and token-usage accounting.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card analogy"><div class="tag">🧩 '
+        + t('生活类比', 'Analogy') + '</div>'
+        + t(
+            '像生产线上的<strong>质检探头</strong>：流水线该怎么走还怎么走，你只是在“上料前 / 下料后”这些节点装上探头，'
+            '需要时取数、记录、甚至微调一下零件。要不要装、装几个，都不影响流水线本身的运转。',
+            'Like <strong>inspection probes</strong> on an assembly line: the line runs exactly as before; you merely '
+            'clamp probes onto nodes like "before loading / after unloading" to read data, log, or even tweak a part '
+            'when needed. Whether you add probes, and how many, does not affect how the line itself runs.',
+        )
+        + '</div>'
+
+        + '<div class="card key"><div class="tag">✅ '
+        + t('关键要点', 'Key Takeaways') + '</div><ul>'
+        + '<li>' + t('钩子 = 发布/订阅；核心循环触发事件，插件注册回调收听。',
+            'Hooks = pub/sub; the core loop fires events, plugins register callbacks to listen.') + '</li>'
+        + '<li>' + t('八个事件：agent / turn / llm / tool 的 before / after。',
+            'Eight events: the before / after of agent / turn / llm / tool.') + '</li>'
+        + '<li>' + t('plugins/ 目录自动加载；langfuse_tracing.py 是现成的追踪插件。',
+            'The plugins/ directory is auto-loaded; langfuse_tracing.py is a ready-made tracing plugin.') + '</li>'
+        + '</ul></div>'
+
+        + '<div class="card spark"><div class="tag">💡 '
+        + t('设计亮点', 'Design Insight') + '</div>'
+        + t(
+            '钩子回调<strong>可以返回一个修改后的 ctx</strong>——所以它不只是“旁观”，还能“改写”流经的上下文。'
+            '这让可观测性与轻量扩展用<strong>同一套机制</strong>实现：既能默默记账，也能在不动核心的前提下调整行为。'
+            '核心循环始终只有 100 行，能力却能从外面一层层叠加上去。',
+            'A hook callback <strong>can return a modified ctx</strong> — so it does more than "observe"; it can '
+            '"rewrite" the context flowing through. This lets observability and lightweight extension share <strong>one '
+            'mechanism</strong>: quietly keep accounts, or adjust behavior without touching the core. The core loop '
+            'stays 100 lines, yet capabilities can be layered on from the outside.',
+        )
+        + '</div>'
+    )
 
 
 def lesson_14(t):
